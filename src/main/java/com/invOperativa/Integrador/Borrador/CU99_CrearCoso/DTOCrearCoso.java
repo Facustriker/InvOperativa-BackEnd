@@ -1,18 +1,16 @@
-package com.invOperativa.Integrador.CU.CU99_CrearArticulo;
+package com.invOperativa.Integrador.Borrador.CU99_CrearCoso;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
-
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DTOCrearArticulo {
+public class DTOCrearCoso {
 
-    private String nombreArticulo;
+    private String nombreCoso;
 
 }

@@ -5,18 +5,17 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
 
+import java.util.Date;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @Builder
 @Entity
-@Table(name = "Articulo")
-public class Articulo extends BaseEntity{
+@Table(name = "Proveedor")
+public class Proveedor extends BaseEntity{
 
-    @Column(name = "descripcionArt")
-    private String descripcionArt;
-
-    @Column(name = "precioUnitario", nullable = false)
-    private float precioUnitario;
+    @Column(name = "fhBajaProveedor", nullable = false)
+    private Date fhBajaProveedor;
 }
