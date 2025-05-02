@@ -19,6 +19,6 @@ public class EstadoOrdenCompra extends BaseEntity{
     @Column(name = "nombreEstadoOrdenCompra", nullable = false)
     private String nombreEstadoOrdenCompra;
 
-    @Column(name = "fhBajaEstadoOrdenCompra", nullable = false)
+    @Column(name = "fhBajaEstadoOrdenCompra")
     private Date fhBajaEstadoOrdenCompra;
 }

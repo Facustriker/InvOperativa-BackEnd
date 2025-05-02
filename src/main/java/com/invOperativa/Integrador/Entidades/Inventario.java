@@ -16,7 +16,7 @@ import java.util.Date;
 @Table(name = "Inventario")
 public class Inventario extends BaseEntity{
 
-    @Column(name = "fhBajaProveedor", nullable = false)
+    @Column(name = "fhBajaProveedor")
     private Date fhBajaInventario;
 
     @JoinColumn(name = "inventarioArticulos")
