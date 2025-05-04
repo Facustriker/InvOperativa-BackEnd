@@ -12,4 +12,9 @@ public interface RepositorioOrdenCompra extends BaseRepository<OrdenCompra, Long
             "FROM OrdenCompra oc " +
             "WHERE oc.proveedor.id = :idProveedor")
     Collection<OrdenCompra> getOrdenesPorProveedor(@Param("idProveedor") Long idProveedor);
+
+    @Query("SELECT oc " +
+            "FROM OrdenCompra oc " +
+            "WHERE oc.estadoOrdenCompra.id = :idEstadoOrdenCompra")
+    Collection<OrdenCompra> getOrdenesPorEstado(@Param("idEstadoOrdenCompra") Long idEstadoOrdenCompra);
 }

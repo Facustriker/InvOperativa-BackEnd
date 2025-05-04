@@ -15,9 +15,9 @@ public class ControladorABProveedor {
     protected ExpertoABProveedor experto;
 
     @GetMapping("/getProveedores")
-    public ResponseEntity<?> getProveedores() {
+    public ResponseEntity<?> getProveedores(boolean soloVigentes) {
         try {
-            Collection<DTOProveedor> ret = experto.getProveedores();
+            Collection<DTOProveedor> ret = experto.getProveedores(soloVigentes);
             return ResponseEntity.ok(ret);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

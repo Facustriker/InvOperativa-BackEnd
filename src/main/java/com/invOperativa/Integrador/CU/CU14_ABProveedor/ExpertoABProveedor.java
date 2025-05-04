@@ -28,10 +28,15 @@ public class ExpertoABProveedor {
     @Autowired
     private final RepositorioArticuloProveedor repositorioArticuloProveedor;
 
-    public Collection<DTOProveedor> getProveedores() throws Exception{
+    public Collection<DTOProveedor> getProveedores(boolean soloVigentes) throws Exception{
         boolean dadoDeBaja;
+        Collection<Proveedor> proveedores;
 
-        Collection<Proveedor> proveedores = repositorioProveedor.findAll();
+        if(soloVigentes){
+            proveedores = repositorioProveedor.getProveedoresVigentes();
+        }else{
+            proveedores = repositorioProveedor.findAll();
+        }
 
         if(proveedores.isEmpty()){
             throw new Exception("Error, no se han encontrado proveedores");
