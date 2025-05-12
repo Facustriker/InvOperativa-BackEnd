@@ -14,53 +14,33 @@ public class ControladorABMEstadoOrdenCompra {
     protected ExpertoABMEstadoOrdenCompra experto;
 
     @GetMapping("/getEstados")
-    public ResponseEntity<?> getEstados(boolean soloVigentes) {
-        try {
-            Collection<DTOABMEstadoOrdenCompra> ret = experto.getEstados(soloVigentes);
-            return ResponseEntity.ok(ret);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<?> getEstados(@RequestParam boolean soloVigentes) {
+        Collection<DTOABMEstadoOrdenCompra> ret = experto.getEstados(soloVigentes);
+        return ResponseEntity.ok(ret);
     }
 
     @PostMapping("/altaEstado")
-    public ResponseEntity<?> altaEstado(String nombreEstado) {
-        try {
-            experto.altaEstado(nombreEstado);
-            return ResponseEntity.ok("");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<?> altaEstado(@RequestParam String nombreEstado) {
+        experto.altaEstado(nombreEstado);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/bajaEstado")
-    public ResponseEntity<?> bajaEstado(Long idEstadoOrdenCompra) {
-        try {
-            experto.bajaEstado(idEstadoOrdenCompra);
-            return ResponseEntity.ok("");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<?> bajaEstado(@RequestParam Long idEstadoOrdenCompra) {
+        experto.bajaEstado(idEstadoOrdenCompra);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/getDatosEstado")
-    public ResponseEntity<?> getDatosEstado(Long idEstadoOrdenCompra) {
-        try {
-            DTOABMEstadoOrdenCompra ret = experto.getDatosEstado(idEstadoOrdenCompra);
-            return ResponseEntity.ok(ret);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<?> getDatosEstado(@RequestParam Long idEstadoOrdenCompra) {
+        DTOABMEstadoOrdenCompra ret = experto.getDatosEstado(idEstadoOrdenCompra);
+        return ResponseEntity.ok(ret);
     }
 
     @PostMapping("/confirmar")
     public ResponseEntity<?> confirmar(@RequestBody DTOABMEstadoOrdenCompra dto) {
-        try {
-            experto.confirmar(dto);
-            return ResponseEntity.ok("");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        experto.confirmar(dto);
+        return ResponseEntity.ok().build();
     }
 
 }

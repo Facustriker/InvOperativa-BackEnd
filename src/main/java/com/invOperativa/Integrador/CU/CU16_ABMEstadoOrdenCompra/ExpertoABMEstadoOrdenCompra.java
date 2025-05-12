@@ -1,5 +1,6 @@
 package com.invOperativa.Integrador.CU.CU16_ABMEstadoOrdenCompra;
 
+import com.invOperativa.Integrador.Config.CustomException;
 import com.invOperativa.Integrador.Entidades.EstadoOrdenCompra;
 import com.invOperativa.Integrador.Entidades.OrdenCompra;
 import com.invOperativa.Integrador.Repositorios.RepositorioEstadoOrdenCompra;
@@ -23,7 +24,7 @@ public class ExpertoABMEstadoOrdenCompra {
     @Autowired
     private final RepositorioOrdenCompra repositorioOrdenCompra;
 
-    public Collection<DTOABMEstadoOrdenCompra> getEstados(boolean soloVigentes) throws Exception{
+    public Collection<DTOABMEstadoOrdenCompra> getEstados(boolean soloVigentes) {
         boolean dadoDeBaja;
         Collection<EstadoOrdenCompra> estados;
 
@@ -35,7 +36,7 @@ public class ExpertoABMEstadoOrdenCompra {
 
 
         if(estados.isEmpty()){
-            throw new Exception("Error, no se han encontrado estados");
+            throw new CustomException("Error, no se han encontrado estados");
         }
 
         Collection<DTOABMEstadoOrdenCompra> dto = new ArrayList<>();
@@ -60,14 +61,14 @@ public class ExpertoABMEstadoOrdenCompra {
         return dto;
     }
 
-    public void altaEstado(String nombreEstado) throws Exception{
+    public void altaEstado(String nombreEstado) {
 
         Collection<EstadoOrdenCompra> estados = repositorioEstadoOrdenCompra.findAll();
 
         for(EstadoOrdenCompra estado: estados){
 
             if(estado.getNombreEstadoOrdenCompra().equals(nombreEstado) && estado.getFhBajaEstadoOrdenCompra()==null){
-                throw new Exception("Error, el nombre ingresado ya se encuentra en uso");
+                throw new CustomException("Error, el nombre ingresado ya se encuentra en uso");
             }
         }
 
@@ -78,18 +79,18 @@ public class ExpertoABMEstadoOrdenCompra {
         repositorioEstadoOrdenCompra.save(estadoNuevo);
     }
 
-    public void bajaEstado(Long idEstadoOrdenCompra) throws Exception{
+    public void bajaEstado(Long idEstadoOrdenCompra) {
 
         Optional<EstadoOrdenCompra> estado = repositorioEstadoOrdenCompra.findById(idEstadoOrdenCompra);
 
         if(estado.get().getFhBajaEstadoOrdenCompra()!=null){
-            throw new Exception("Error, el estado ya se encuentra dado de baja");
+            throw new CustomException("Error, el estado ya se encuentra dado de baja");
         }
 
         Collection<OrdenCompra> ordenesCompra = repositorioOrdenCompra.getOrdenesPorEstado(idEstadoOrdenCompra);
 
         if(!(ordenesCompra.isEmpty())){
-            throw new Exception("Error, el estado no se puede dar de baja porque tiene una orden de compra asociada");
+            throw new CustomException("Error, el estado no se puede dar de baja porque tiene una orden de compra asociada");
         }
 
         estado.get().setFhBajaEstadoOrdenCompra(new Date());
@@ -102,6 +103,10 @@ public class ExpertoABMEstadoOrdenCompra {
 
         Optional<EstadoOrdenCompra> estado = repositorioEstadoOrdenCompra.findById(idEstadoOrdenCompra);
 
+        if(estado.isEmpty()){
+            throw new CustomException("Error, el estado seleccionado no existe");
+        }
+
         DTOABMEstadoOrdenCompra dto = DTOABMEstadoOrdenCompra.builder()
                 .idEOC(estado.get().getId())
                 .nombreEstado(estado.get().getNombreEstadoOrdenCompra())
@@ -110,13 +115,13 @@ public class ExpertoABMEstadoOrdenCompra {
         return dto;
     }
 
-    public void confirmar(DTOABMEstadoOrdenCompra dto) throws Exception{
+    public void confirmar(DTOABMEstadoOrdenCompra dto) {
 
         Collection<EstadoOrdenCompra> estados = repositorioEstadoOrdenCompra.findAll();
 
         for(EstadoOrdenCompra estado: estados){
             if(estado.getNombreEstadoOrdenCompra().equals(dto.getNombreEstado()) && estado.getFhBajaEstadoOrdenCompra()==null){
-                throw new Exception("Error, el nombre ingresado ya se encuentra en uso");
+                throw new CustomException("Error, el nombre ingresado ya se encuentra en uso");
             }
         }
 
