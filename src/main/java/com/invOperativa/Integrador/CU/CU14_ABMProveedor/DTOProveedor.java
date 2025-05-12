@@ -1,4 +1,4 @@
-package com.invOperativa.Integrador.CU.CU14_ABProveedor;
+package com.invOperativa.Integrador.CU.CU14_ABMProveedor;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,4 +18,6 @@ public class DTOProveedor {
     private Date fhBajaProveedor;
 
     private boolean dadoBaja;
+
+    private String nombreProveedor;
 }
