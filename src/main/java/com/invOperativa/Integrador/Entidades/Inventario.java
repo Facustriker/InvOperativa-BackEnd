@@ -24,6 +24,10 @@ public class Inventario extends BaseEntity{
     @Builder.Default
     private Collection<InventarioArticulo> inventarioArticulos = new ArrayList<>();
 
+    @ManyToOne()
+    @JoinColumn(name = "modeloInventario")
+    private ModeloInventario modeloInventario;
+
     public void addInventarioArticulo(InventarioArticulo ia) {
         inventarioArticulos.add(ia);
     }
