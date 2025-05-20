@@ -18,8 +18,8 @@ public class ControladorListarProductosAReponer {
     protected ExpertoListarProductosAReponer experto;
 
     @GetMapping("/getInventarioArticulosAReponer")
-    public ResponseEntity<Collection<DTOInventarioArticulo>> getInventarioArticulos(@RequestParam Long articuloId){
-        Collection<DTOInventarioArticulo> listaDto = experto.getInventarioArticulosAReponer(articuloId);
+    public ResponseEntity<Collection<DTOInventarioArticulo>> getInventarioArticulos(@RequestParam Long inventarioId){
+        Collection<DTOInventarioArticulo> listaDto = experto.getInventarioArticulosAReponer(inventarioId);
         return ResponseEntity.ok(listaDto);
     }
 

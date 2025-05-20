@@ -30,4 +30,5 @@ public class InventarioArticulo extends BaseEntity{
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "articulo")
     private Articulo articulo;
+
 }

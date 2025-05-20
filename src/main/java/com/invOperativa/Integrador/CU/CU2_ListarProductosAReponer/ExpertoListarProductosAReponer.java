@@ -3,9 +3,11 @@ package com.invOperativa.Integrador.CU.CU2_ListarProductosAReponer;
 import com.invOperativa.Integrador.CU.CU14_ABMProveedor.DTOProveedor;
 import com.invOperativa.Integrador.Config.CustomException;
 import com.invOperativa.Integrador.Entidades.Articulo;
+import com.invOperativa.Integrador.Entidades.Inventario;
 import com.invOperativa.Integrador.Entidades.InventarioArticulo;
 import com.invOperativa.Integrador.Entidades.Proveedor;
 import com.invOperativa.Integrador.Repositorios.RepositorioArticulo;
+import com.invOperativa.Integrador.Repositorios.RepositorioInventario;
 import com.invOperativa.Integrador.Repositorios.RepositorioInventarioArticulo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,20 +29,23 @@ public class ExpertoListarProductosAReponer {
     private final RepositorioInventarioArticulo repositorioInventarioArticulo;
 
     @Autowired
-    private final RepositorioArticulo repositorioArticulo;
+    private final RepositorioInventario repositorioInventario;
 
     //Obtener los InventarioArticulos de un Inventario con stock <= puntoPedido
     public Collection<DTOInventarioArticulo> getInventarioArticulosAReponer(Long inventarioId) {
 
-        Collection<InventarioArticulo> inventarioArticulos;
-
-        //Cambiar cuando ya esté el ABMArticulo
         Long placeholder_id = 1L;
+        Optional<Inventario> inventario = repositorioInventario.findById(placeholder_id);
 
-        inventarioArticulos = repositorioInventarioArticulo.getInventarioArticulos(placeholder_id);
+        Collection<InventarioArticulo> inventarioArticulos = new ArrayList<>();
 
-        if (inventarioArticulos.isEmpty()) {
-            throw new CustomException("Error, el inventario no tiene articulos asignados");
+        if (inventario.isEmpty()) {
+            throw new CustomException("Error, el inventario no existe");
+        }else {
+            inventarioArticulos = inventario.get().getInventarioArticulos();
+            if (inventarioArticulos.isEmpty()){
+                throw new CustomException("Error, el inventario no tiene articulos");
+            }
         }
 
         Collection<DTOInventarioArticulo> dtoInvArts = new ArrayList<>();
