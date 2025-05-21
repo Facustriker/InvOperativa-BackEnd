@@ -12,4 +12,9 @@ public interface RepositorioArticuloProveedor extends BaseRepository<ArticuloPro
             "FROM ArticuloProveedor ap " +
             "WHERE ap.proveedor.id = :idProveedor")
     Collection<ArticuloProveedor> getArticulosProveedorPorIdProveedor(@Param("idProveedor") Long idProveedor);
+
+    @Query("SELECT ap " +
+            "FROM ArticuloProveedor ap" +
+            "WHERE ap.articulo.id = :idArticulo")
+    Collection<ArticuloProveedor> getArticulosProveedorPorIdArticulo(@Param("idArticulo") Long idArticulo);
 }
