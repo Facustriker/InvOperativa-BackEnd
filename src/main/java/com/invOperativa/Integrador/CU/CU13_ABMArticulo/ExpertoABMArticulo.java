@@ -10,7 +10,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.Date;
 import java.util.List;
 
@@ -112,4 +111,10 @@ public class ExpertoABMArticulo {
 
         repositorio.save(artExistente);
     }
+
+    // Trae los articulos según como se desee, solo vigentes o todos
+    public List<Articulo> traerTodos(boolean soloVigentes) {
+        return soloVigentes ? repositorio.findByFechaBajaIsNull() : repositorio.findAll();
+    }
+
 }

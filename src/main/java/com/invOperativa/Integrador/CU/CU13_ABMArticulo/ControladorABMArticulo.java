@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/ABMArticulo")
 public class ControladorABMArticulo {
@@ -31,6 +33,13 @@ public class ControladorABMArticulo {
     public ResponseEntity<?> baja(@PathVariable Long id){
         experto.bajarArticulo(id);
         return ResponseEntity.ok().build();
+    }
+
+    // Lleva todos los articulos existentes
+    @GetMapping("/getAll")
+    public ResponseEntity<?> getAll(@RequestParam boolean soloVigentes){
+        List<Articulo> articulos = experto.traerTodos(soloVigentes);
+        return ResponseEntity.ok(articulos);
     }
 
 }
