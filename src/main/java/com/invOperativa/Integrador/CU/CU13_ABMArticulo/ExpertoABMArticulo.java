@@ -43,4 +43,34 @@ public class ExpertoABMArticulo {
 
         repositorio.save(articulo);
     }
+
+    // Permite modificar un articulo que ya existe
+    public void modificarArticulo(Articulo art) {
+
+        Articulo artExistente = repositorio.findById(art.getId()).orElseThrow(() -> new CustomException("No existe el articulo que desea modificar") );
+
+        if (art.getPrecioUnitario() <= 0) {
+            throw new CustomException("El precio unitario no puede ser menor o igual a 0");
+        }
+
+        if (art.getDescripcionArt().trim().isEmpty()){
+            throw new CustomException("La descripción del artículo no puede estar vacía");
+        }
+
+        if (art.getNombre().trim().isEmpty()){
+            throw new CustomException("El nombre del artículo no puede estar vacío");
+        }
+
+        if (art.getCostoAlmacenamiento() < 0){
+            throw new CustomException("El costo de almacenamiento no puede ser negativo");
+        }
+
+        artExistente.setDescripcionArt(art.getDescripcionArt());
+        artExistente.setNombre(art.getNombre());
+        artExistente.setCostoAlmacenamiento(art.getCostoAlmacenamiento());
+        artExistente.setPrecioUnitario(art.getPrecioUnitario());
+
+        repositorio.save(artExistente);
+
+    }
 }

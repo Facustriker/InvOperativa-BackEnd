@@ -19,4 +19,11 @@ public class ControladorABMArticulo {
         return ResponseEntity.ok().build();
     }
 
+    // Modificar artículo existente
+    @PutMapping("/modificar")
+    public ResponseEntity<?> modificar(@RequestParam Articulo art){
+        experto.modificarArticulo(art);
+        return ResponseEntity.ok().build();
+    }
+
 }
