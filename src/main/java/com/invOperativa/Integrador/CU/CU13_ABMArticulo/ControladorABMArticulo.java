@@ -26,4 +26,11 @@ public class ControladorABMArticulo {
         return ResponseEntity.ok().build();
     }
 
+    // Baja lógica de un artículo
+    @PutMapping("/baja/{id}")
+    public ResponseEntity<?> baja(@PathVariable Long id){
+        experto.bajarArticulo(id);
+        return ResponseEntity.ok().build();
+    }
+
 }

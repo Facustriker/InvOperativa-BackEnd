@@ -3,6 +3,8 @@ package com.invOperativa.Integrador.Entidades;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Date;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -30,4 +32,7 @@ public class InventarioArticulo extends BaseEntity{
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "articulo")
     private Articulo articulo;
+
+    @Column(name = "fechaBaja")
+    private Date fechaBaja;
 }
