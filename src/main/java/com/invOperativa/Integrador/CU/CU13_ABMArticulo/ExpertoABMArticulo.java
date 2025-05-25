@@ -2,9 +2,11 @@ package com.invOperativa.Integrador.CU.CU13_ABMArticulo;
 
 import com.invOperativa.Integrador.Config.CustomException;
 import com.invOperativa.Integrador.Entidades.Articulo;
-import com.invOperativa.Integrador.Entidades.InventarioArticulo;
+import com.invOperativa.Integrador.Entidades.ArticuloProveedor;
+import com.invOperativa.Integrador.Entidades.ModeloInventarioArticulo;
 import com.invOperativa.Integrador.Repositorios.RepositorioArticulo;
-import com.invOperativa.Integrador.Repositorios.RepositorioInventarioArticulo;
+import com.invOperativa.Integrador.Repositorios.RepositorioArticuloProveedor;
+import com.invOperativa.Integrador.Repositorios.RepositorioModeloInventarioArticulo;
 import com.invOperativa.Integrador.Repositorios.RepositorioOrdenCompraDetalle;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +26,10 @@ public class ExpertoABMArticulo {
     private RepositorioOrdenCompraDetalle repositorioOrdenCompraDetalle;
 
     @Autowired
-    private RepositorioInventarioArticulo repositorioInventarioArticulo;
+    private RepositorioArticuloProveedor repositorioArticuloProveedor;
+
+    @Autowired
+    private RepositorioModeloInventarioArticulo repositorioModeloInventarioArticulo;
 
     // Da de alta el articulo verificando los valores
     @Transactional
@@ -97,13 +102,21 @@ public class ExpertoABMArticulo {
             throw new CustomException("El artículo está presente en una orden pendiente o enviada y no puede darse de baja.");
         }
 
-        List<InventarioArticulo> inventarioArticulos = repositorioInventarioArticulo.findByArticuloIdAndFechaBajaIsNull(id);
+        List<ArticuloProveedor> articuloProveedores = repositorioArticuloProveedor.findActivosByArticuloId(id);
 
-        // Ponemos fecha de baja a los inventario articulos
-        if (!inventarioArticulos.isEmpty()){
-            for (InventarioArticulo inventarioArticulo: inventarioArticulos){
-                inventarioArticulo.setFechaBaja(new Date());
-                repositorioInventarioArticulo.save(inventarioArticulo);
+        if (!articuloProveedores.isEmpty()){
+            for (ArticuloProveedor relacion : articuloProveedores) {
+                relacion.setFechaBaja(new Date());
+                repositorioArticuloProveedor.save(relacion);
+            }
+        }
+
+        List<ModeloInventarioArticulo> modeloInventarioArticuloList = repositorioModeloInventarioArticulo.findActivosByArticuloId(id);
+
+        if (!modeloInventarioArticuloList.isEmpty()){
+            for (ModeloInventarioArticulo modelo : modeloInventarioArticuloList) {
+                modelo.setFechaBaja(new Date());
+                repositorioModeloInventarioArticulo.save(modelo);
             }
         }
 

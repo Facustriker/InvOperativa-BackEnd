@@ -2,7 +2,6 @@ package com.invOperativa.Integrador.Entidades;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.util.Date;
 
 @AllArgsConstructor
@@ -12,13 +11,16 @@ import java.util.Date;
 @Builder
 @Entity
 @Table(name = "InventarioArticulo")
-public class InventarioArticulo extends BaseEntity{
+public class ModeloInventarioArticulo extends BaseEntity{
 
     @Column(name = "inventarioMaxArticulo")
     private int inventarioMaxArticulo;
 
     @Column(name = "loteOptimo")
     private int loteOptimo;
+
+    @Column(name = "proximaRevision")
+    private Date proximaRevision;
 
     @Column(name = "puntoPedido")
     private int puntoPedido;
@@ -29,10 +31,17 @@ public class InventarioArticulo extends BaseEntity{
     @Column(name = "stockSeguridad")
     private int stockSeguridad;
 
+    @Column(name = "tiempoFijo")
+    private int tiempoFijo;
+
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "articulo")
     private Articulo articulo;
 
     @Column(name = "fechaBaja")
     private Date fechaBaja;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "modeloInvetario")
+    private ModeloInventario modeloInventario;
 }
