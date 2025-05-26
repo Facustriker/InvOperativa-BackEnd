@@ -28,6 +28,6 @@ public class Articulo extends BaseEntity{
     @Column(name = "nombre", nullable = false)
     private String nombre;
 
-    @Column(name = "fechaBaja")
-    private Date fechaBaja;
+    @Column(name = "fhBajaArticulo")
+    private Date fhBajaArticulo;
 }

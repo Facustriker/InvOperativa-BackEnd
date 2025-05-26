@@ -20,16 +20,16 @@ import java.util.List;
 public class ExpertoABMArticulo {
 
     @Autowired
-    private RepositorioArticulo repositorio;
+    private final RepositorioArticulo repositorio;
 
     @Autowired
-    private RepositorioOrdenCompraDetalle repositorioOrdenCompraDetalle;
+    private final RepositorioOrdenCompraDetalle repositorioOrdenCompraDetalle;
 
     @Autowired
-    private RepositorioArticuloProveedor repositorioArticuloProveedor;
+    private final RepositorioArticuloProveedor repositorioArticuloProveedor;
 
     @Autowired
-    private RepositorioModeloInventarioArticulo repositorioModeloInventarioArticulo;
+    private final RepositorioModeloInventarioArticulo repositorioModeloInventarioArticulo;
 
     // Da de alta el articulo verificando los valores
     @Transactional
@@ -55,7 +55,7 @@ public class ExpertoABMArticulo {
                 .costoAlmacenamiento(art.getCostoAlmacenamiento())
                 .descripcionArt(art.getDescripcionArt())
                 .precioUnitario(art.getPrecioUnitario())
-                .fechaBaja(null)
+                .fhBajaArticulo(null)
                 .nombre(art.getNombre())
                 .build();
 
@@ -120,14 +120,14 @@ public class ExpertoABMArticulo {
             }
         }
 
-        artExistente.setFechaBaja(new Date());
+        artExistente.setFhBajaArticulo(new Date());
 
         repositorio.save(artExistente);
     }
 
     // Trae los articulos según como se desee, solo vigentes o todos
     public List<Articulo> traerTodos(boolean soloVigentes) {
-        return soloVigentes ? repositorio.findByFechaBajaIsNull() : repositorio.findAll();
+        return soloVigentes ? repositorio.findByfhBajaArticuloIsNull() : repositorio.findAll();
     }
 
 }
