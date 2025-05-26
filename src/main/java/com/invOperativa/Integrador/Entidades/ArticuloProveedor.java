@@ -2,7 +2,6 @@ package com.invOperativa.Integrador.Entidades;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.util.Date;
 
 @AllArgsConstructor
@@ -14,11 +13,14 @@ import java.util.Date;
 @Table(name = "ArticuloProveedor")
 public class ArticuloProveedor extends BaseEntity{
 
+    @Column(name = "costoPedido")
+    private float costoPedido;
+
     @Column(name = "fhAsignacion", nullable = false)
     private Date fhAsignacion;
 
-    @Column(name = "cargosPedido")
-    private Float cargosPedido;
+    @Column(name = "fechaBaja")
+    private Date fechaBaja;
 
     @Column(name = "demoraEntrega")
     private Date demoraEntrega;
@@ -27,7 +29,7 @@ public class ArticuloProveedor extends BaseEntity{
     private boolean isPredeterminado;
 
     @Column(name = "precioUnitario")
-    private double precioUnitario;
+    private float costoUnitario;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "articulo")
@@ -36,4 +38,8 @@ public class ArticuloProveedor extends BaseEntity{
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "proveedor")
     private Proveedor proveedor;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "modeloInventario")
+    private ModeloInventario modeloInventario;
 }
