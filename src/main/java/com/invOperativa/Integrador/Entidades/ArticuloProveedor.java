@@ -22,9 +22,6 @@ public class ArticuloProveedor extends BaseEntity{
     @Column(name = "fechaBaja", nullable = false)
     private Date fechaBaja;
 
-    @Column(name = "cargosPedido")
-    private Float cargosPedido;
-
     @Column(name = "demoraEntrega")
     private Date demoraEntrega;
 
@@ -32,7 +29,7 @@ public class ArticuloProveedor extends BaseEntity{
     private boolean isPredeterminado;
 
     @Column(name = "precioUnitario")
-    private double precioUnitario;
+    private float precioUnitario;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "articulo")
