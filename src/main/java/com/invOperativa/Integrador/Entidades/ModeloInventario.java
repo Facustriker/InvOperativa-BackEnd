@@ -13,9 +13,15 @@ import java.util.Date;
 @Setter
 @Builder
 @Entity
-@Table(name = "ModeloInventario")
+@Table(name = "ModeloInventario") //Le indica que Esta entidad se volverá una tabla
+
+
 public class ModeloInventario extends BaseEntity{
 
-    @Column(name = "nombreModelo")
+    // ya heredó el atributo id de tipo long de la entidad BaseEntity que está extendiendo
+
+    @Column(name = "nombreModelo") //Indica a la persistencia que cree una columna en al tabla que contega:
     private String nombreModelo;
+    @Column(name = "fhBajaModeloInventario")
+    private Date fhBajaModeloInventario;
 }
