@@ -1,6 +1,5 @@
 package com.invOperativa.Integrador.CU.CU7_ListarProveedoresXArticulo;
 
-import com.invOperativa.Integrador.CU.CU2_ListarProductosAReponer.DTOInventarioArticulo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

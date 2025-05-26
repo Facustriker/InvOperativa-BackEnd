@@ -1,37 +1,32 @@
 package com.invOperativa.Integrador.CU.CU2_ListarProductosAReponer;
 
-import com.invOperativa.Integrador.Entidades.Articulo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DTOInventarioArticulo {
+public class DTOArticulo {
 
-    //Atributos del InvArt
-    private Long idInvArt;
-
-    private int inventarioMaxArticulo;
-
-    private int loteOptimo;
-
-    private int puntoPedido;
-
-    private int stock;
-
-    private int stockSeguridad;
-
-    //Atributos del Articulo
-    private Long idArt;
-
-    private float cargosPedido;
-
+    private Long id;
+    private float costoAlmacenamiento;
     private String descripcionArt;
-
+    private Date fhBajaArticulo;
+    private int inventarioMaxArticulo;
+    private int loteOptimo;
     private float precioUnitario;
+    private Date proximaRevision;
+    private int puntoPedido;
+    private int stock;
+    private int stockSeguridad;
+    private int tiempoFijo;
+
+
+
 
 }

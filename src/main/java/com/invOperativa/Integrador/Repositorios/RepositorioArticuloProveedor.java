@@ -19,4 +19,5 @@ public interface RepositorioArticuloProveedor extends BaseRepository<ArticuloPro
             "AND ap.articulo.fhBajaArticulo IS NULL")
     List<ArticuloProveedor> findActivosByArticuloId(@Param("idArticulo") Long idArticulo);
 
+
 }

@@ -3,7 +3,6 @@ package com.invOperativa.Integrador.CU.CU7_ListarProveedoresXArticulo;
 import com.invOperativa.Integrador.Config.CustomException;
 import com.invOperativa.Integrador.Entidades.Articulo;
 import com.invOperativa.Integrador.Entidades.ArticuloProveedor;
-import com.invOperativa.Integrador.Entidades.InventarioArticulo;
 import com.invOperativa.Integrador.Entidades.Proveedor;
 import com.invOperativa.Integrador.Repositorios.RepositorioArticulo;
 import com.invOperativa.Integrador.Repositorios.RepositorioArticuloProveedor;
@@ -34,7 +33,7 @@ public class ExpertoListarProveedoresXArticulo {
         }
 
         Long placeholder_id = 1L;
-        Collection<ArticuloProveedor> articulosProveedor = repositorioArticuloProveedor.getArticulosProveedorPorIdArticulo(placeholder_id);
+        Collection<ArticuloProveedor> articulosProveedor = repositorioArticuloProveedor.findActivosByArticuloId(placeholder_id);
 
         Collection<DTOProveedor> dtosProv = new ArrayList<>();
 

@@ -1,22 +1,17 @@
 package com.invOperativa.Integrador.CU.CU2_ListarProductosAReponer;
 
-import com.invOperativa.Integrador.CU.CU14_ABMProveedor.DTOProveedor;
 import com.invOperativa.Integrador.Config.CustomException;
 import com.invOperativa.Integrador.Entidades.Articulo;
-import com.invOperativa.Integrador.Entidades.Inventario;
-import com.invOperativa.Integrador.Entidades.InventarioArticulo;
-import com.invOperativa.Integrador.Entidades.Proveedor;
+import com.invOperativa.Integrador.Entidades.ArticuloProveedor;
 import com.invOperativa.Integrador.Repositorios.RepositorioArticulo;
-import com.invOperativa.Integrador.Repositorios.RepositorioInventario;
-import com.invOperativa.Integrador.Repositorios.RepositorioInventarioArticulo;
+import com.invOperativa.Integrador.Repositorios.RepositorioArticuloProveedor;
+import com.invOperativa.Integrador.Repositorios.RepositorioOrdenCompraDetalle;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,57 +21,49 @@ public class ExpertoListarProductosAReponer {
 //no tengan una orden de compra pendiente o enviada
 
     @Autowired
-    private final RepositorioInventarioArticulo repositorioInventarioArticulo;
+    private final RepositorioArticulo repositorioArticulo;
 
     @Autowired
-    private final RepositorioInventario repositorioInventario;
+    private final RepositorioOrdenCompraDetalle repositorioOrdenCompraDetalle;
+
 
     //Obtener los InventarioArticulos de un Inventario con stock <= puntoPedido
-    public Collection<DTOInventarioArticulo> getInventarioArticulosAReponer(Long inventarioId) {
+    public Collection<DTOArticulo> getArticulosAReponer() {
 
-        Long placeholder_id = 1L;
-        Optional<Inventario> inventario = repositorioInventario.findById(placeholder_id);
-
-        Collection<InventarioArticulo> inventarioArticulos = new ArrayList<>();
-
-        if (inventario.isEmpty()) {
-            throw new CustomException("Error, el inventario no existe");
-        }else {
-            inventarioArticulos = inventario.get().getInventarioArticulos();
-            if (inventarioArticulos.isEmpty()){
-                throw new CustomException("Error, el inventario no tiene articulos");
-            }
+        Collection<Articulo> articulos = repositorioArticulo.findAll();
+        if (articulos.isEmpty()) {
+            throw new CustomException("Error, no existen articulos en el inventario");
         }
 
-        Collection<DTOInventarioArticulo> dtoInvArts = new ArrayList<>();
+        Collection<DTOArticulo> dtoArts = new ArrayList<>();
 
-        for (InventarioArticulo invArt : inventarioArticulos) {
+        for (Articulo art : articulos) {
 
-            int stock = invArt.getStock();
-            int puntoPedido = invArt.getPuntoPedido();
+            int stock = art.getStock();
+            int puntoPedido = art.getPuntoPedido();
 
-            if (stock <= puntoPedido) {
+            if (stock <= puntoPedido && !(repositorioOrdenCompraDetalle.existsArticuloEnOrdenPendienteOEnviada(art.getId()))) {
 
-                //Leer el Articulo del InventarioArticulo y crea DTOInvArticulo
-                Articulo art = invArt.getArticulo();
-
-                DTOInventarioArticulo dtoInvArt = DTOInventarioArticulo.builder()
-                        .idInvArt(invArt.getId())
-                        .inventarioMaxArticulo(invArt.getInventarioMaxArticulo())
-                        .loteOptimo(invArt.getLoteOptimo())
-                        .puntoPedido(invArt.getPuntoPedido())
-                        .stock(invArt.getStock())
-                        .stockSeguridad(invArt.getStockSeguridad())
-                        .idArt(art.getId())
+                DTOArticulo dtoArt = DTOArticulo.builder()
+                        .id(art.getId())
+                        .costoAlmacenamiento(art.getCostoAlmacenamiento())
                         .descripcionArt(art.getDescripcionArt())
+                        .fhBajaArticulo(art.getFhBajaArticulo())
+                        .inventarioMaxArticulo(art.getInventarioMaxArticulo())
+                        .loteOptimo(art.getLoteOptimo())
                         .precioUnitario(art.getPrecioUnitario())
+                        .proximaRevision(art.getProximaRevision())
+                        .puntoPedido(art.getPuntoPedido())
+                        .stock(art.getStock())
+                        .stockSeguridad(art.getStockSeguridad())
+                        .tiempoFijo(art.getTiempoFijo())
                         .build();
 
-                dtoInvArts.add(dtoInvArt);
+                dtoArts.add(dtoArt);
             }
         }
 
-        return dtoInvArts;
+        return dtoArts;
     }
 
 }

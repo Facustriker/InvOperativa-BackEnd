@@ -1,6 +1,5 @@
 package com.invOperativa.Integrador.CU.CU2_ListarProductosAReponer;
 
-import com.invOperativa.Integrador.CU.CU14_ABMProveedor.ExpertoABMProveedor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,9 +16,9 @@ public class ControladorListarProductosAReponer {
     @Autowired
     protected ExpertoListarProductosAReponer experto;
 
-    @GetMapping("/getInventarioArticulosAReponer")
-    public ResponseEntity<Collection<DTOInventarioArticulo>> getInventarioArticulos(@RequestParam Long inventarioId){
-        Collection<DTOInventarioArticulo> listaDto = experto.getInventarioArticulosAReponer(inventarioId);
+    @GetMapping("/getArticulosAReponer")
+    public ResponseEntity<Collection<DTOArticulo>> getArticulos(){
+        Collection<DTOArticulo> listaDto = experto.getArticulosAReponer();
         return ResponseEntity.ok(listaDto);
     }
 
