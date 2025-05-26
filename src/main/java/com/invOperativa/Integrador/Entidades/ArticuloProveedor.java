@@ -19,7 +19,7 @@ public class ArticuloProveedor extends BaseEntity{
     @Column(name = "fhAsignacion", nullable = false)
     private Date fhAsignacion;
 
-    @Column(name = "fechaBaja", nullable = false)
+    @Column(name = "fechaBaja")
     private Date fechaBaja;
 
     @Column(name = "demoraEntrega")
@@ -29,7 +29,7 @@ public class ArticuloProveedor extends BaseEntity{
     private boolean isPredeterminado;
 
     @Column(name = "precioUnitario")
-    private float precioUnitario;
+    private float costoUnitario;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "articulo")
