@@ -27,7 +27,7 @@ public class ControladorABMModeloInventario {
 
     @PostMapping("/bajaModelo")
     public ResponseEntity<?> bajaModelo(@RequestParam Long idModeloInventario) {
-        experto.darBaja(idModeloInventario);
+        experto.bajaModelo(idModeloInventario);
         return ResponseEntity.ok().build();
     }
 

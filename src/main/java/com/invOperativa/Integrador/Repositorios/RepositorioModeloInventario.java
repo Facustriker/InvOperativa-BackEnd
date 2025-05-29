@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Collection;
 
 public interface RepositorioModeloInventario extends JpaRepository<ModeloInventario, Long> {
+   
+   
     @Query("SELECT m FROM ModeloInventario m WHERE m.fhBajaModeloInventario IS NULL")
     Collection<ModeloInventario> getModelosVigentes();
 }

@@ -14,10 +14,12 @@ import java.util.Date;
 
 public class DTOABMModeloInventario {
 
-    private Long idModeloInventario;
+    private Long idMI;
 
-    private String nombreModeliInv;
+    private Date fhBajaMI;
 
-    private Date fhBajaModeloInventario;
+    private String nombreMI;
+
+    private boolean MIdadoBaja;
 
 }
