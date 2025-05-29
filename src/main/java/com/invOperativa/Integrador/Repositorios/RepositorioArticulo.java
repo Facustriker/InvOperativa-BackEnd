@@ -8,7 +8,7 @@ import java.util.List;
 public interface RepositorioArticulo extends BaseRepository<Articulo, Long>{
 
     @Query("SELECT ar" +
-            "FROM Articulo AS ar" +
+            " FROM Articulo ar " +
             "WHERE ar.id = :articuloId")
     Articulo getArticulo(@RequestParam("articuloId") Long articuloId);
 
