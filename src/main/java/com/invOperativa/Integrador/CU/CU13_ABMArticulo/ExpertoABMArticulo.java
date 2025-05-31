@@ -3,10 +3,8 @@ package com.invOperativa.Integrador.CU.CU13_ABMArticulo;
 import com.invOperativa.Integrador.Config.CustomException;
 import com.invOperativa.Integrador.Entidades.Articulo;
 import com.invOperativa.Integrador.Entidades.ArticuloProveedor;
-import com.invOperativa.Integrador.Entidades.ModeloInventarioArticulo;
 import com.invOperativa.Integrador.Repositorios.RepositorioArticulo;
 import com.invOperativa.Integrador.Repositorios.RepositorioArticuloProveedor;
-import com.invOperativa.Integrador.Repositorios.RepositorioModeloInventarioArticulo;
 import com.invOperativa.Integrador.Repositorios.RepositorioOrdenCompraDetalle;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -27,9 +25,6 @@ public class ExpertoABMArticulo {
 
     @Autowired
     private final RepositorioArticuloProveedor repositorioArticuloProveedor;
-
-    @Autowired
-    private final RepositorioModeloInventarioArticulo repositorioModeloInventarioArticulo;
 
     // Da de alta el articulo verificando los valores
     @Transactional
@@ -108,15 +103,6 @@ public class ExpertoABMArticulo {
             for (ArticuloProveedor relacion : articuloProveedores) {
                 relacion.setFechaBaja(new Date());
                 repositorioArticuloProveedor.save(relacion);
-            }
-        }
-
-        List<ModeloInventarioArticulo> modeloInventarioArticuloList = repositorioModeloInventarioArticulo.findActivosByArticuloId(id);
-
-        if (!modeloInventarioArticuloList.isEmpty()){
-            for (ModeloInventarioArticulo modelo : modeloInventarioArticuloList) {
-                modelo.setFechaBaja(new Date());
-                repositorioModeloInventarioArticulo.save(modelo);
             }
         }
 
