@@ -31,6 +31,9 @@ public class ArticuloProveedor extends BaseEntity{
     @Column(name = "precioUnitario")
     private float costoUnitario;
 
+    @Column(name = "nivelServicio")
+    private float nivelServicio;
+
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "articulo")
     private Articulo articulo;

@@ -52,4 +52,7 @@ public class Articulo extends BaseEntity{
     @Column(name = "nombre", nullable = false)
     private String nombre;
 
+    @Column(name = "demanda", nullable = false)
+    private String demanda;
+
 }
