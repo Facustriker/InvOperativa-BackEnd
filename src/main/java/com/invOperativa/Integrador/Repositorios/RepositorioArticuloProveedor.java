@@ -19,5 +19,10 @@ public interface RepositorioArticuloProveedor extends BaseRepository<ArticuloPro
             "AND ap.articulo.fhBajaArticulo IS NULL")
     List<ArticuloProveedor> findActivosByArticuloId(@Param("idArticulo") Long idArticulo);
 
+    //Agrego esto para el ABM de ModeloInventario (para evitar dar de baja un modelo que tiene artículos asociados)
+    @Query("SELECT ap " +
+            "FROM ArticuloProveedor ap " +
+            "WHERE ap.modeloInventario.id = :idModeloInventario")
+    Collection<ArticuloProveedor> getAPPorModeloInventario(@Param("idModeloInventario") Long idModeloInventario);
 
 }
