@@ -50,12 +50,12 @@ public class ExpertoListarProductosAReponer {
                         .descripcionArt(art.getDescripcionArt())
                         .fhBajaArticulo(art.getFhBajaArticulo())
                         .inventarioMaxArticulo(art.getInventarioMaxArticulo())
-                        .loteOptimo(art.getLoteOptimo())
+                        //.loteOptimo(art.getLoteOptimo())
                         .precioUnitario(art.getPrecioUnitario())
                         .proximaRevision(art.getProximaRevision())
                         .puntoPedido(art.getPuntoPedido())
                         .stock(art.getStock())
-                        .stockSeguridad(art.getStockSeguridad())
+                        //.stockSeguridad(art.getStockSeguridad())
                         .tiempoFijo(art.getTiempoFijo())
                         .build();
 

@@ -20,4 +20,6 @@ public class DTODatosCGI {
     private float costoPedido;
 
     private float costoAlmacenamiento;
+
+    private boolean isPredeterminado;
 }
