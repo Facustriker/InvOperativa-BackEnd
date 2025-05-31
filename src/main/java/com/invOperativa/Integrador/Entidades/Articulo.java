@@ -53,6 +53,6 @@ public class Articulo extends BaseEntity{
     private String nombre;
 
     @Column(name = "demanda", nullable = false)
-    private String demanda;
+    private int demanda;
 
 }
