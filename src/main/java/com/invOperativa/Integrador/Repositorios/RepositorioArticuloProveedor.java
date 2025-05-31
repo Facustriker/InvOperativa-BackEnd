@@ -25,10 +25,5 @@ public interface RepositorioArticuloProveedor extends BaseRepository<ArticuloPro
             "WHERE ap.modeloInventario.id = :idModeloInventario")
     Collection<ArticuloProveedor> getAPPorModeloInventario(@Param("idModeloInventario") Long idModeloInventario);
 
-    //Agrego esto para el ABM de ModeloInventario (para evitar dar de baja un modelo que tiene artículos asociados)
-    @Query("SELECT ap " +
-            "FROM ArticuloProveedor ap " +
-            "WHERE ap.modeloInventario.id = :idModeloInventario")
-    Collection<ArticuloProveedor> getAPPorModeloInventario(@Param("idModeloInventario") Long idModeloInventario);
 }
 
