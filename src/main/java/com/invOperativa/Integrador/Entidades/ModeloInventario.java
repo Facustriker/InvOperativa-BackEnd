@@ -20,4 +20,5 @@ public class ModeloInventario extends BaseEntity{
 
     @Column(name = "fhBajaModeloInventario")
     private Date fhBajaModeloInventario;
+    
 }

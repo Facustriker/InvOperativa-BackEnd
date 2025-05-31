@@ -5,8 +5,6 @@ import com.invOperativa.Integrador.Entidades.ModeloInventario;
 import com.invOperativa.Integrador.Entidades.ArticuloProveedor;
 import com.invOperativa.Integrador.Repositorios.RepositorioModeloInventario;
 import com.invOperativa.Integrador.Repositorios.RepositorioArticuloProveedor;
-
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -144,6 +142,8 @@ public class ExpertoABMModeloInventario {
         DTOABMModeloInventario dtoMiMod = DTOABMModeloInventario.builder()
                 .idMI(modeloInventario.get().getId())
                 .nombreMI(modeloInventario.get().getNombreModelo())
+                .fhBajaMI(modeloInventario.get().getFhBajaModeloInventario())
+                .MIdadoBaja(modeloInventario.get().getFhBajaModeloInventario() != null)
                 .build();
 
         return dtoMiMod;
