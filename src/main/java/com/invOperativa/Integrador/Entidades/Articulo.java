@@ -31,9 +31,6 @@ public class Articulo extends BaseEntity{
     @Column(name = "inventarioMaxArticulo")
     private int inventarioMaxArticulo;
 
-    @Column(name = "loteOptimo")
-    private int loteOptimo;
-
     @Column(name = "proximaRevision")
     private Date proximaRevision;
 
@@ -42,9 +39,6 @@ public class Articulo extends BaseEntity{
 
     @Column(name = "stock")
     private int stock;
-
-    @Column(name = "stockSeguridad")
-    private int stockSeguridad;
 
     @Column(name = "tiempoFijo")
     private int tiempoFijo;
