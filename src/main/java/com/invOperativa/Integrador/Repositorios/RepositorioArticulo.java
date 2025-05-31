@@ -4,6 +4,7 @@ import com.invOperativa.Integrador.Entidades.Articulo;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
+import java.util.Optional;
 
 public interface RepositorioArticulo extends BaseRepository<Articulo, Long>{
 
@@ -14,5 +15,11 @@ public interface RepositorioArticulo extends BaseRepository<Articulo, Long>{
 
     // Trae los articulo que no estén dados de baja
     List<Articulo> findByfhBajaArticuloIsNull();
+
+    @Query("SELECT a " +
+            "FROM Articulo a " +
+            "WHERE id = :idArticulo " +
+            "AND (fhBajaArticulo IS NULL OR fhBajaArticulo > CURRENT_TIMESTAMP)")
+    Optional<Articulo> getArticuloVigentePorId(@RequestParam("idArticulo") Long idArticulo);
 
 }
