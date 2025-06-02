@@ -23,7 +23,7 @@ public class ArticuloProveedor extends BaseEntity{
     private Date fechaBaja;
 
     @Column(name = "demoraEntrega")
-    private Date demoraEntrega;
+    private int demoraEntrega;
 
     @Column(name = "isPredeterminado", nullable = false)
     private boolean isPredeterminado;
