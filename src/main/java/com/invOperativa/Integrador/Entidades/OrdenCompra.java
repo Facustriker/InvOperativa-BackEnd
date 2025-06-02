@@ -26,10 +26,6 @@ public class OrdenCompra extends BaseEntity{
     @JoinColumn(name = "estadoOrdenCompra")
     private EstadoOrdenCompra estadoOrdenCompra;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "proveedor")
-    private Proveedor proveedor;
-
     @JoinColumn(name = "ordenCompraDetalles")
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Builder.Default

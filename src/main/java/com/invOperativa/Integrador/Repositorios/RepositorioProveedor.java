@@ -21,6 +21,12 @@ public interface RepositorioProveedor extends BaseRepository<Proveedor, Long>{
             "AND (fhBajaProveedor IS NULL OR fhBajaProveedor > CURRENT_TIMESTAMP)")
     Optional<Proveedor> getProveedorVigentePorNombre(@Param("nombreProveedor") String nombreProveedor);
 
+    @Query("SELECT p " +
+            "FROM Proveedor p " +
+            "WHERE p.id = :idProveedor " +
+            "AND (fhBajaProveedor IS NULL OR fhBajaProveedor > CURRENT_TIMESTAMP)")
+    Optional<Proveedor> getProveedorVigentePorID(@Param("idProveedor") Long idProveedor);
+
     @Query("SELECT p FROM Proveedor p WHERE p.id = :id AND p.fhBajaProveedor IS NULL")
     Optional<Proveedor> findActivoById(@Param("id") Long id);
 
