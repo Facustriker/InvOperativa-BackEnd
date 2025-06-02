@@ -33,6 +33,10 @@ public class ExpertoABMArticulo {
             throw new CustomException("El costo de almacenamiento no puede ser menor a 0");
         }
 
+        if (art.getDemanda() < 0){
+            throw new CustomException("La demanda no puede ser menor a 0");
+        }
+
         if (art.getDescripcionArt().trim().isEmpty()){
             throw new CustomException("La descripción del artículo no puede estar vacía");
         }
@@ -41,59 +45,71 @@ public class ExpertoABMArticulo {
             throw new CustomException("El inventario maximo no puede ser menor a 0");
         }
 
-        if (art.getLoteOptimo() < 0) {
-            throw new CustomException("El lote optimo no puede ser menor a 0");
+        if (art.getNombre().trim().isEmpty()){
+            throw new CustomException("El nombre del artículo no puede estar vacío");
         }
 
         if (art.getPrecioUnitario() <= 0) {
             throw new CustomException("El precio unitario no puede ser menor o igual a 0");
         }
 
-        if (art.getProximaRevision() == null) {
-            throw new CustomException("La proxima fecha de revision no puede ser nula");
-        }
-
-        if (art.getPuntoPedido() < 0) {
-            throw new CustomException("El punto de pedido no puede ser menor a 0");
-        }
-
         if (art.getStock() < 0) {
             throw new CustomException("El stock no puede ser menor a 0");
         }
 
-        if (art.getStockSeguridad() < 0) {
-            throw new CustomException("El stock de seguridad no puede ser menor a 0");
+    }
+
+    // Metodo auxiliar para revisar articulos que llegan
+    public void revisarArticuloDTO(DTOArticulo art){
+
+        if (art.getCostoAlmacenamiento() < 0){
+            throw new CustomException("El costo de almacenamiento no puede ser menor a 0");
         }
 
-        if (art.getTiempoFijo() < 0) {
-            throw new CustomException("El tiempo fijo no puede ser menor a 0");
+        if (art.getDemanda() < 0){
+            throw new CustomException("La demanda no puede ser menor a 0");
+        }
+
+        if (art.getDescripcionArt().trim().isEmpty()){
+            throw new CustomException("La descripción del artículo no puede estar vacía");
+        }
+
+        if (art.getInventarioMaxArticulo() < 0){
+            throw new CustomException("El inventario maximo no puede ser menor a 0");
         }
 
         if (art.getNombre().trim().isEmpty()){
             throw new CustomException("El nombre del artículo no puede estar vacío");
         }
 
+        if (art.getPrecioUnitario() <= 0) {
+            throw new CustomException("El precio unitario no puede ser menor o igual a 0");
+        }
+
+        if (art.getStock() < 0) {
+            throw new CustomException("El stock no puede ser menor a 0");
+        }
+
     }
 
     // Da de alta el articulo verificando los valores
     @Transactional
-    public void altaArticulo(Articulo art){
+    public void altaArticulo(DTOArticulo art){
 
-        revisarArticulo(art);
+        revisarArticuloDTO(art);
 
         Articulo articulo = Articulo.builder()
                 .costoAlmacenamiento(art.getCostoAlmacenamiento())
+                .demanda(art.getDemanda())
                 .descripcionArt(art.getDescripcionArt())
                 .fhBajaArticulo(null)
                 .inventarioMaxArticulo(art.getInventarioMaxArticulo())
-                .loteOptimo(art.getLoteOptimo())
-                .precioUnitario(art.getPrecioUnitario())
-                .proximaRevision(art.getProximaRevision())
-                .puntoPedido(art.getPuntoPedido())
-                .stock(art.getStock())
-                .stockSeguridad(art.getStockSeguridad())
-                .tiempoFijo(art.getTiempoFijo())
                 .nombre(art.getNombre())
+                .precioUnitario(art.getPrecioUnitario())
+                .proximaRevision(null)
+                .puntoPedido(null)
+                .stock(art.getStock())
+                .tiempoFijo(null)
                 .build();
 
         repositorio.save(articulo);
@@ -110,13 +126,8 @@ public class ExpertoABMArticulo {
         artExistente.setCostoAlmacenamiento(art.getCostoAlmacenamiento());
         artExistente.setDescripcionArt(art.getDescripcionArt());
         artExistente.setInventarioMaxArticulo(art.getInventarioMaxArticulo());
-        artExistente.setLoteOptimo(art.getLoteOptimo());
         artExistente.setPrecioUnitario(art.getPrecioUnitario());
-        artExistente.setProximaRevision(art.getProximaRevision());
-        artExistente.setPuntoPedido(art.getPuntoPedido());
         artExistente.setStock(art.getStock());
-        artExistente.setStockSeguridad(art.getStockSeguridad());
-        artExistente.setTiempoFijo(art.getTiempoFijo());
         artExistente.setNombre(art.getNombre());
 
         repositorio.save(artExistente);
