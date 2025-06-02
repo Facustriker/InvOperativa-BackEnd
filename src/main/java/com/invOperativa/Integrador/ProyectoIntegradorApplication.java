@@ -1,13 +1,7 @@
 package com.invOperativa.Integrador;
 
-import com.invOperativa.Integrador.Entidades.Articulo;
-import com.invOperativa.Integrador.Entidades.ArticuloProveedor;
-import com.invOperativa.Integrador.Entidades.ModeloInventario;
-import com.invOperativa.Integrador.Entidades.Proveedor;
-import com.invOperativa.Integrador.Repositorios.RepositorioArticulo;
-import com.invOperativa.Integrador.Repositorios.RepositorioArticuloProveedor;
-import com.invOperativa.Integrador.Repositorios.RepositorioModeloInventario;
-import com.invOperativa.Integrador.Repositorios.RepositorioProveedor;
+import com.invOperativa.Integrador.Entidades.*;
+import com.invOperativa.Integrador.Repositorios.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,6 +13,9 @@ import java.util.Date;
 
 @SpringBootApplication
 public class ProyectoIntegradorApplication {
+
+	//Los repositorios y el Bean son para hacer una carga inicial de datos, si quieren hacerlo
+	//solo sáquenle el comentario y ejecuten, mientras estén comentados no hacen nada
 
 	@Autowired
 	private RepositorioArticuloProveedor repositorioArticuloProveedor;
@@ -32,17 +29,19 @@ public class ProyectoIntegradorApplication {
 	@Autowired
 	private RepositorioModeloInventario repositorioModeloInventario;
 
+	@Autowired
+	private RepositorioOrdenCompra repositorioOrdenCompra;
+
 
 	public static void main(String[] args) {
 		SpringApplication.run(ProyectoIntegradorApplication.class, args);
 		System.out.println("El proyecto está funcionando");
 	}
 
-	/*
-
 	@Bean
 	public CommandLineRunner init() {
 		return args -> {
+			/*
 
 			ModeloInventario modeloLoteFijo = ModeloInventario.builder()
 					.nombreModelo("Lote Fijo")
@@ -217,16 +216,65 @@ public class ProyectoIntegradorApplication {
 					.modeloInventario(modeloTiempoFijo)
 					.build();
 
-			repositorioArticuloProveedor.save(artProv1);
-			repositorioArticuloProveedor.save(artProv2);
-			repositorioArticuloProveedor.save(artProv3);
-			repositorioArticuloProveedor.save(artProv4);
-			repositorioArticuloProveedor.save(artProv5);
-			repositorioArticuloProveedor.save(artProv6);
+			artProv1 = repositorioArticuloProveedor.save(artProv1);
+			artProv2 = repositorioArticuloProveedor.save(artProv2);
+			artProv3 = repositorioArticuloProveedor.save(artProv3);
+			artProv4 = repositorioArticuloProveedor.save(artProv4);
+			artProv5 = repositorioArticuloProveedor.save(artProv5);
+			artProv6 = repositorioArticuloProveedor.save(artProv6);
+
+			EstadoOrdenCompra estado1 = EstadoOrdenCompra.builder()
+					.nombreEstadoOrdenCompra("Pendiente")
+					.build();
+
+			EstadoOrdenCompra estado2 = EstadoOrdenCompra.builder()
+					.nombreEstadoOrdenCompra("Finalizada")
+					.build();
+
+			OrdenCompraDetalle ocd1 = OrdenCompraDetalle.builder()
+					.cantidad(50)
+					.articuloProveedor(artProv2)
+					.build();
+
+			OrdenCompraDetalle ocd2 = OrdenCompraDetalle.builder()
+					.cantidad(30)
+					.articuloProveedor(artProv1)
+					.build();
+
+			OrdenCompraDetalle ocd3 = OrdenCompraDetalle.builder()
+					.cantidad(80)
+					.articuloProveedor(artProv3)
+					.build();
+
+			OrdenCompraDetalle ocd4 = OrdenCompraDetalle.builder()
+					.cantidad(120)
+					.articuloProveedor(artProv4)
+					.build();
+
+			OrdenCompra oc1 = OrdenCompra.builder()
+					.fhAltaOrdenCompra(new Date())
+					.build();
+
+			oc1.setEstadoOrdenCompra(estado1);
+			oc1.addOrdenCompraDetalle(ocd1);
+			oc1.addOrdenCompraDetalle(ocd2);
+			oc1.addOrdenCompraDetalle(ocd3);
+
+			OrdenCompra oc2 = OrdenCompra.builder()
+					.fhAltaOrdenCompra(new Date())
+					.build();
+
+			oc2.setEstadoOrdenCompra(estado2);
+			oc2.addOrdenCompraDetalle(ocd4);
+
+			repositorioOrdenCompra.save(oc1);
+			repositorioOrdenCompra.save(oc2);
+
+			 */
 		};
 	}
 
 	
-	 */
+
 
 }
