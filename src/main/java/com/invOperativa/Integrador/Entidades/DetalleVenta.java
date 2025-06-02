@@ -18,7 +18,7 @@ public class DetalleVenta extends BaseEntity{
     @Column(name = "subTotal")
     private int subTotal;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "articulo")
     private Articulo articulo;
 }

@@ -41,15 +41,15 @@ public class ArticuloProveedor extends BaseEntity{
     @Column(name = "loteOptimo")
     private int loteOptimo;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "articulo")
     private Articulo articulo;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "proveedor")
     private Proveedor proveedor;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "modeloInventario")
     private ModeloInventario modeloInventario;
 
