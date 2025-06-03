@@ -1,5 +1,6 @@
 package com.invOperativa.Integrador.CU.CU13_ABMArticulo;
 
+import com.invOperativa.Integrador.CU.CU10_AsignarProveedor.ExpertoAsignarProveedor;
 import com.invOperativa.Integrador.Config.CustomException;
 import com.invOperativa.Integrador.Entidades.Articulo;
 import com.invOperativa.Integrador.Entidades.ArticuloProveedor;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -123,12 +125,29 @@ public class ExpertoABMArticulo {
 
         revisarArticulo(art);
 
+        if (art.getDemanda() != artExistente.getDemanda()){
+
+            ArticuloProveedor proveedorPredeterminado = repositorioArticuloProveedor.findByArticuloIdAndIsPredeterminadoTrueAndFechaBajaIsNull(artExistente.getId()).orElseThrow(()->new CustomException("No hay proveedor predeterminado"));
+
+            int demanda = art.getDemanda();
+            float tiempoEntrega = proveedorPredeterminado.getDemoraEntrega();
+            float nivelServicio = proveedorPredeterminado.getNivelServicio();
+            double z = ArticuloProveedor.getZ(nivelServicio);
+            double desviacion = 0.25F * Math.sqrt(tiempoEntrega);
+
+            int puntoPedido = (int) Math.round((demanda / 365.0) * tiempoEntrega + z * desviacion);
+
+            artExistente.setPuntoPedido(puntoPedido);
+
+        }
+
         artExistente.setCostoAlmacenamiento(art.getCostoAlmacenamiento());
         artExistente.setDescripcionArt(art.getDescripcionArt());
         artExistente.setInventarioMaxArticulo(art.getInventarioMaxArticulo());
         artExistente.setPrecioUnitario(art.getPrecioUnitario());
         artExistente.setStock(art.getStock());
         artExistente.setNombre(art.getNombre());
+        artExistente.setDemanda(art.getDemanda());
 
         repositorio.save(artExistente);
 

@@ -32,4 +32,8 @@ public interface RepositorioArticuloProveedor extends BaseRepository<ArticuloPro
             "AND ap.articulo.fhBajaArticulo IS NULL")
     Collection<ArticuloProveedor> getArticulosProveedorVigentesPorArticuloId(@Param("idArticulo") Long idArticulo);
 
+    // Metodo que te devuelve el ArticuloProveedor predeterminado para un artículo
+    Optional<ArticuloProveedor> findByArticuloIdAndIsPredeterminadoTrueAndFechaBajaIsNull(Long articuloId);
+
+
 }
