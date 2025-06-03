@@ -177,19 +177,58 @@ public class ExpertoAsignarProveedor {
     }
 
     @Transactional
-    public void eliminarAsignacion (Long id){
+    public void eliminarAsignacion(Long id) {
 
-        ArticuloProveedor articuloProveedor = repositorioArticuloProveedor.findById(id).orElseThrow(()->new CustomException("No existe el articulo proveedor"));
+        ArticuloProveedor articuloProveedor = repositorioArticuloProveedor
+                .findById(id)
+                .orElseThrow(() -> new CustomException("No existe el artículo proveedor"));
 
-        List<OrdenCompraDetalle> enUso = repositorioOrdenCompraDetalle.findByArticuloProveedorEnOrdenesPendientesOEnviadas(articuloProveedor.getId());
+        List<OrdenCompraDetalle> enUso = repositorioOrdenCompraDetalle
+                .findByArticuloProveedorEnOrdenesPendientesOEnviadas(articuloProveedor.getId());
+
         if (!enUso.isEmpty()) {
             throw new CustomException("No se puede dar de baja el Artículo-Proveedor porque está en órdenes pendientes o enviadas.");
         }
 
-        articuloProveedor.setFechaBaja(new Date());
+        List<ArticuloProveedor> articuloProveedors = repositorioArticuloProveedor
+                .findActivosByArticuloId(articuloProveedor.getArticulo().getId());
 
+        if (articuloProveedors.size() == 1) {
+            throw new CustomException("No se puede dar de baja el Artículo-Proveedor porque es el único.");
+        }
+
+        boolean eraPredeterminado = articuloProveedor.isPredeterminado();
+
+        // Dar de baja lógica
+        articuloProveedor.setFechaBaja(new Date());
+        articuloProveedor.setPredeterminado(false);
         repositorioArticuloProveedor.save(articuloProveedor);
 
+        // Si era predeterminado, asignar otro y recalcular punto de pedido
+        if (eraPredeterminado) {
+            Optional<ArticuloProveedor> nuevoPredeterminadoOpt = articuloProveedors.stream()
+                    .filter(ap -> !ap.getId().equals(articuloProveedor.getId()))
+                    .findFirst();
+
+            if (nuevoPredeterminadoOpt.isPresent()) {
+                ArticuloProveedor nuevoPredeterminado = nuevoPredeterminadoOpt.get();
+                nuevoPredeterminado.setPredeterminado(true);
+                repositorioArticuloProveedor.save(nuevoPredeterminado);
+
+                // Recalcular punto de pedido del artículo
+                Articulo articulo = articuloProveedor.getArticulo();
+                int demanda = articulo.getDemanda();
+                float tiempoEntrega = nuevoPredeterminado.getDemoraEntrega();
+                float nivelServicio = nuevoPredeterminado.getNivelServicio();
+                double z = ArticuloProveedor.getZ(nivelServicio);
+                double desviacion = 0.25F * Math.sqrt(tiempoEntrega);
+
+                int puntoPedido = (int) Math.round((demanda / 365.0) * tiempoEntrega + z * desviacion);
+                articulo.setPuntoPedido(puntoPedido);
+
+                repositorioArticulo.save(articulo); // Guardar artículo actualizado
+            }
+        }
     }
 
 }
