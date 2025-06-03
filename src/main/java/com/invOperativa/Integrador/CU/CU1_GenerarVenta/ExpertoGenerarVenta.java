@@ -1,5 +1,6 @@
 package com.invOperativa.Integrador.CU.CU1_GenerarVenta;
 
+import com.invOperativa.Integrador.CU.CU9_GenerarOrdenDeCompra.ExpertoGenerarOrdenDeCompra;
 import com.invOperativa.Integrador.Config.CustomException;
 import com.invOperativa.Integrador.Entidades.Articulo;
 import com.invOperativa.Integrador.Entidades.DetalleVenta;
@@ -24,6 +25,8 @@ public class ExpertoGenerarVenta {
     private final RepositorioDetalleVenta repositorioDetalleVenta;
     private final RepositorioVenta repositorioVenta;
 
+    private final ExpertoGenerarOrdenDeCompra expertoGenerarOrdenDeCompra;
+
     @Transactional
     public void nueva(DTOGenerarVenta dto) {
 
@@ -46,6 +49,12 @@ public class ExpertoGenerarVenta {
 
             Articulo articulo =  repositorioArticulo.findActivoById(detalle.getArticuloID()).orElseThrow(()-> new CustomException("No existe el artículo que se desea vender"));
 
+            int nuevoStock = articulo.getStock()-detalle.getCantidad();
+
+            if (nuevoStock < 0){
+                throw new CustomException("La cantidad ingresada es mayor al stock disponible");
+            }
+
             float subTotal = articulo.getPrecioUnitario() * detalle.getCantidad();
 
             if (Math.abs(detalle.getSubTotal() - subTotal) > 0.01f) {
@@ -59,6 +68,16 @@ public class ExpertoGenerarVenta {
                     .cant(detalle.getCantidad())
                     .subTotal(detalle.getSubTotal())
                     .build();
+
+
+            articulo.setStock(nuevoStock);
+            repositorioArticulo.save(articulo);
+
+            if (articulo.getPuntoPedido() != null){
+                if (nuevoStock <= articulo.getPuntoPedido()){
+                    expertoGenerarOrdenDeCompra.generacionAutomatica(articulo.getId());
+                }
+            }
 
             detallesAuxiliares.add(detalleVenta);
 
