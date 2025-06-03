@@ -13,6 +13,8 @@ import java.util.Date;
 @NoArgsConstructor
 public class DTOAsignarProveedor {
 
+    private Long id;
+
     private Long articuloId;
     private Long proveedorId;
     private Long modeloInventarioId;

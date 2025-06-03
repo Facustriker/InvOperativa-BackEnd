@@ -173,8 +173,102 @@ public class ExpertoAsignarProveedor {
     }
 
     @Transactional
-    public void modificarAsignacion(DTOAsignarProveedor dto){
+    public void modificarAsignacion(DTOAsignarProveedor dto) {
+        ArticuloProveedor articuloProveedor = repositorioArticuloProveedor
+                .findById(dto.getId())
+                .orElseThrow(() -> new CustomException("No existe la asignación a modificar"));
+
+        if (articuloProveedor.getFechaBaja() != null) {
+            throw new CustomException("No se puede modificar una asignación dada de baja");
+        }
+
+        Articulo articulo = articuloProveedor.getArticulo();
+
+        ModeloInventario nuevoModelo = repositorioModeloInventario
+                .findActivoById(dto.getModeloInventarioId())
+                .orElseThrow(() -> new CustomException("No existe el nuevo modelo de inventario"));
+
+        // Validar DTO con el modelo nuevo
+        revisarDTO(dto, nuevoModelo);
+
+        // Cambiar el modelo
+        articuloProveedor.setModeloInventario(nuevoModelo);
+
+        // Actualizar valores permitidos
+        articuloProveedor.setCostoPedido(dto.getCostoPedido());
+        articuloProveedor.setCostoUnitario(dto.getCostoUnitario());
+        articuloProveedor.setDemoraEntrega(dto.getDemoraEntrega());
+        articuloProveedor.setNivelServicio(dto.getNivelServicio());
+
+        boolean eraPredeterminado = articuloProveedor.isPredeterminado();
+
+        if (!eraPredeterminado && dto.isPredeterminado()) {
+            // Verificar si hay otro predeterminado
+            Optional<ArticuloProveedor> anteriorPredeterminado =
+                    repositorioArticuloProveedor.findByArticuloIdAndIsPredeterminadoTrueAndFechaBajaIsNull(articulo.getId());
+
+            anteriorPredeterminado.ifPresent(ap -> {
+                ap.setPredeterminado(false);
+                repositorioArticuloProveedor.save(ap);
+            });
+
+            articuloProveedor.setPredeterminado(true);
+        } else {
+            articuloProveedor.setPredeterminado(dto.isPredeterminado());
+        }
+
+        // MODELO: Tiempo fijo
+        if (nuevoModelo.getNombreModelo().equals("Tiempo fijo")) {
+
+            LocalDate fechaActual = LocalDate.now();
+            Date hoy = new Date();
+
+            if (dto.getProximaRevision() == null) {
+                int dias = dto.getTiempoFijo();
+
+                LocalDate proximaRevision = fechaActual.plusDays(dias);
+                Date fechaProximaRevision = Date.from(proximaRevision.atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+                articulo.setTiempoFijo(dias);
+                articulo.setProximaRevision(fechaProximaRevision);
+
+            } else {
+                if (dto.getProximaRevision().before(hoy)) {
+                    throw new CustomException("La próxima fecha no puede ser en el pasado");
+                }
+
+                articulo.setTiempoFijo(dto.getTiempoFijo());
+                articulo.setProximaRevision(dto.getProximaRevision());
+            }
+
+            repositorioArticulo.save(articulo);
+
+        } else {
+            // MODELO: Lote fijo
+            float tiempoEntrega = dto.getDemoraEntrega();
+            float nivelServicio = dto.getNivelServicio();
+            double z = ArticuloProveedor.getZ(nivelServicio);
+            double desviacion = 0.25F * Math.sqrt(tiempoEntrega);
+            int stockSeguridad = (int) Math.round(z * desviacion);
+
+            articuloProveedor.setStockSeguridad(stockSeguridad);
+
+            if (articuloProveedor.isPredeterminado()) {
+                int demanda = articulo.getDemanda();
+                int puntoPedido = (int) Math.round((demanda / 365.0) * tiempoEntrega + z * desviacion);
+                articulo.setPuntoPedido(puntoPedido);
+                repositorioArticulo.save(articulo);
+            }
+        }
+
+        // Calcular lote óptimo
+        int loteOptimo = (int) Math.sqrt((2 * articulo.getDemanda() * dto.getCostoPedido()) / articulo.getCostoAlmacenamiento());
+        articuloProveedor.setLoteOptimo(loteOptimo);
+
+        repositorioArticuloProveedor.save(articuloProveedor);
     }
+
+
 
     @Transactional
     public void eliminarAsignacion(Long id) {
