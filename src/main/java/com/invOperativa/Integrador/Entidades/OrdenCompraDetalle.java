@@ -16,9 +16,9 @@ public class OrdenCompraDetalle extends BaseEntity{
     private int cantidad;
 
     @Column(name = "subTotal")
-    private int subTotal;
+    private float subTotal;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "articuloProveedor")
     private ArticuloProveedor articuloProveedor;
 
