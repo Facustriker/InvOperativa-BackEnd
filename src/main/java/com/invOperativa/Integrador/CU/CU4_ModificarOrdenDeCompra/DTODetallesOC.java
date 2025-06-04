@@ -13,7 +13,7 @@ public class DTODetallesOC {
 
     private int cantidad;
 
-    private int subTotal;
+    private float subTotal;
 
     private float costoUnitario;
 
