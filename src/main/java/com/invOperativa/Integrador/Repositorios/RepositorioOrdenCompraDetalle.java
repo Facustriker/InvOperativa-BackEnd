@@ -4,6 +4,8 @@ import com.invOperativa.Integrador.Entidades.OrdenCompraDetalle;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface RepositorioOrdenCompraDetalle extends BaseRepository<OrdenCompraDetalle, Long>{
 
     // Consulta para saber si un artículo está en una orden de compra en estado pendiente o enviada
@@ -18,4 +20,16 @@ public interface RepositorioOrdenCompraDetalle extends BaseRepository<OrdenCompr
         AND eoc.nombreEstadoOrdenCompra IN ('Pendiente', 'Enviada')
     """)
         boolean existsArticuloEnOrdenPendienteOEnviada(@Param("articuloId") Long articuloId);
+
+        @Query("""
+        SELECT ocd FROM OrdenCompraDetalle ocd
+        JOIN ocd.articuloProveedor ap
+        JOIN OrdenCompra oc ON ocd MEMBER OF oc.ordenCompraDetalles
+        JOIN oc.estadoOrdenCompra eoc
+        WHERE ap.id = :id
+        AND (eoc.nombreEstadoOrdenCompra = 'Pendiente' OR eoc.nombreEstadoOrdenCompra = 'Enviada')
+    """)
+        List<OrdenCompraDetalle> findByArticuloProveedorEnOrdenesPendientesOEnviadas(@Param("id") Long id);
+
+
 }

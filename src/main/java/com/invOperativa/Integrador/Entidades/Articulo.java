@@ -19,34 +19,34 @@ public class Articulo extends BaseEntity{
     @Column(name = "costoAlmacenamiento", nullable = false)
     private float costoAlmacenamiento;
 
+    @Column(name = "demanda", nullable = false)
+    private int demanda;
+
     @Column(name = "descripcionArt", nullable = false)
     private String descripcionArt;
 
     @Column(name = "fhBajaArticulo")
     private Date fhBajaArticulo;
 
-    @Column(name = "precioUnitario", nullable = false)
-    private float precioUnitario;
-
     @Column(name = "inventarioMaxArticulo")
     private int inventarioMaxArticulo;
+
+    @Column(name = "nombre", nullable = false)
+    private String nombre;
+
+    @Column(name = "precioUnitario", nullable = false)
+    private float precioUnitario;
 
     @Column(name = "proximaRevision")
     private Date proximaRevision;
 
     @Column(name = "puntoPedido")
-    private int puntoPedido;
+    private Integer puntoPedido;
 
     @Column(name = "stock")
     private int stock;
 
     @Column(name = "tiempoFijo")
-    private int tiempoFijo;
-
-    @Column(name = "nombre", nullable = false)
-    private String nombre;
-
-    @Column(name = "demanda", nullable = false)
-    private int demanda;
+    private Integer tiempoFijo;
 
 }

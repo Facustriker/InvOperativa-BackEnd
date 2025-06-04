@@ -1,7 +1,6 @@
 package com.invOperativa.Integrador.Repositorios;
 
 import com.invOperativa.Integrador.Entidades.ArticuloProveedor;
-import com.invOperativa.Integrador.Entidades.Proveedor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.util.Collection;
@@ -21,10 +20,25 @@ public interface RepositorioArticuloProveedor extends BaseRepository<ArticuloPro
             "AND ap.articulo.fhBajaArticulo IS NULL")
     List<ArticuloProveedor> findActivosByArticuloId(@Param("idArticulo") Long idArticulo);
 
+    //Agrego esto para el ABM de ModeloInventario (para evitar dar de baja un modelo que tiene artículos asociados)
+    @Query("SELECT ap " +
+            "FROM ArticuloProveedor ap " +
+            "WHERE ap.modeloInventario.id = :idModeloInventario")
+    Collection<ArticuloProveedor> getAPPorModeloInventario(@Param("idModeloInventario") Long idModeloInventario);
+    
     @Query("SELECT ap FROM ArticuloProveedor ap " +
-            "WHERE ap.proveedor.id = :idProveedor " +
-            "AND ap.articulo.proximaRevision <= CURRENT_DATE " +
-            "AND ap.isPredeterminado = True " +
-            "AND ap.modeloInventario.nombreModelo = 'Tiempo Fijo'")
+            "WHERE ap.articulo.id = :idArticulo " +
+            "AND ap.fechaBaja IS NULL " +
+            "AND ap.articulo.fhBajaArticulo IS NULL")
+    Collection<ArticuloProveedor> getArticulosProveedorVigentesPorArticuloId(@Param("idArticulo") Long idArticulo);
+
+    // Metodo que te devuelve el ArticuloProveedor predeterminado para un artículo
+    Optional<ArticuloProveedor> findByArticuloIdAndIsPredeterminadoTrueAndFechaBajaIsNull(Long articuloId);
+
+    @Query("SELECT ap FROM ArticuloProveedor ap " +
+                        "WHERE ap.proveedor.id = :idProveedor " +
+                        "AND ap.articulo.proximaRevision <= CURRENT_DATE " +
+                        "AND ap.isPredeterminado = True " +
+                        "AND ap.modeloInventario.nombreModelo = 'Tiempo Fijo'")
     Collection<ArticuloProveedor> findTiempoFijo(@Param("idProveedor") Long idProveedor);
 }

@@ -17,7 +17,7 @@ import java.util.Date;
 public class Venta extends BaseEntity{
 
     @Column(name = "montoTotal")
-    private int montoTotal;
+    private float montoTotal;
 
     @Column(name = "fhAltaVenta", nullable = false)
     private Date fhAltaVenta;

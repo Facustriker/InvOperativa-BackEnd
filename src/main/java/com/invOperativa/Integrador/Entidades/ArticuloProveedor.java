@@ -36,20 +36,20 @@ public class ArticuloProveedor extends BaseEntity{
     private float nivelServicio;
 
     @Column(name = "stockSeguridad")
-    private int stockSeguridad;
+    private Integer stockSeguridad;
 
     @Column(name = "loteOptimo")
-    private int loteOptimo;
+    private Integer loteOptimo;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "articulo")
     private Articulo articulo;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "proveedor")
     private Proveedor proveedor;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "modeloInventario")
     private ModeloInventario modeloInventario;
 
