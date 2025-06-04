@@ -24,9 +24,9 @@ public class ExpertoGenerarVenta {
     private final RepositorioArticulo repositorioArticulo;
     private final RepositorioDetalleVenta repositorioDetalleVenta;
     private final RepositorioVenta repositorioVenta;
-
     private final ExpertoGenerarOrdenDeCompra expertoGenerarOrdenDeCompra;
 
+    // Genera una nueva venta y verifica si no hace falta generar ordenes de compra
     @Transactional
     public void nueva(DTOGenerarVenta dto) {
 
@@ -98,4 +98,31 @@ public class ExpertoGenerarVenta {
 
     }
 
+    // Devuelve un DTO con todas las ventas ordenadas de las mas reciente a la mas antigua
+    public List<DTOVenta> getAll(){
+
+        List<Venta> ventas = repositorioVenta.findAllByOrderByFhAltaVentaDesc();
+
+        if (ventas.isEmpty()){
+            throw new CustomException("No hay ventas actualmente");
+        }
+
+        List<DTOVenta> dtoVentas = new ArrayList<>();
+
+        for (Venta venta : ventas) {
+
+            DTOVenta dto = DTOVenta.builder()
+                    .id(venta.getId())
+                    .monto(venta.getMontoTotal())
+                    .fechaAlta(venta.getFhAltaVenta())
+                    .cantidadArticulos(venta.getDetalleVentas().size())
+                    .build();
+
+            dtoVentas.add(dto);
+
+        }
+
+        return dtoVentas;
+
+    }
 }

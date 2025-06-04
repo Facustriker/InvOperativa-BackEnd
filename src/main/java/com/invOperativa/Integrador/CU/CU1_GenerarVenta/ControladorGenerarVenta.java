@@ -2,10 +2,8 @@ package com.invOperativa.Integrador.CU.CU1_GenerarVenta;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/generarVenta")
@@ -18,6 +16,12 @@ public class ControladorGenerarVenta {
     public ResponseEntity<?> nuevaVenta(@RequestBody DTOGenerarVenta dto){
         experto.nueva(dto);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/traerTodos")
+    public ResponseEntity<?> traerTodos(){
+        List<DTOVenta> ventas = experto.getAll();
+        return ResponseEntity.ok(ventas);
     }
 
 }
