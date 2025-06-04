@@ -32,7 +32,7 @@ public class ExpertoProponerOrdenCompra {
     @Autowired
     protected RepositorioEstadoOrdenCompra repositorioEstadoOC;
 
-    @Scheduled(cron = "*/20 * * * * *") // cada 59 segundos
+    @Scheduled(cron = "0 0 8 * * ?") //Se ejecuta todos los días a las 8 AM
     public void generarOrdenCompra() {
         System.out.println("Ejecutando tarea programada...");
         //Obtengo todos los proveedores
@@ -44,37 +44,49 @@ public class ExpertoProponerOrdenCompra {
         for (Proveedor proveedor : proveedores) {
             Collection<ArticuloProveedor> articulosProveedor = repositorioArticuloProveedor.findTiempoFijo(proveedor.getId());
             System.out.println(articulosProveedor);
-            if (!articulosProveedor.isEmpty()) {
-                System.out.println("Hay articulos:");
-                OrdenCompra ordenCompra = OrdenCompra.builder()
-                        .fhAltaOrdenCompra(new Date())
-                        .isAuto(true)
-                        .estadoOrdenCompra(estadoOrdenCompra)
-                        .proveedor(proveedor)
-                        .build();
-                for (ArticuloProveedor ap : articulosProveedor) {
-                    Collection<OrdenCompra> ordenesExistentes = repositorioOC.findOrdenesNoFinalizadasNiCanceladasByArticuloProveedor(ap);
-                    System.out.println("orden");
-                    System.out.println(ordenesExistentes);
-                    if (!ordenesExistentes.isEmpty()) {
-                        System.out.println("ya existe la orden");
-                        // Ya hay una orden "activa" para este artículoProveedor. Saltar al siguiente.
-                        continue;
-                    }
 
-                    int cantidad = ap.getArticulo().getPuntoPedido() - ap.getArticulo().getStock();
-                    OrdenCompraDetalle OCDetalle = OrdenCompraDetalle.builder()
-                            .articuloProveedor(ap)
-                            .cantidad(cantidad)
-                            .build();
-                    ordenCompra.addOrdenCompraDetalle(OCDetalle);
+            if (articulosProveedor.isEmpty()) {
+                continue;
+            }
+            System.out.println("Hay articulos:");
+            OrdenCompra ordenCompra = OrdenCompra.builder()
+                    .fhAltaOrdenCompra(new Date())
+                    .isAuto(true)
+                    .estadoOrdenCompra(estadoOrdenCompra)
+                    .proveedor(proveedor)
+                    .build();
+
+            for (ArticuloProveedor ap : articulosProveedor) {
+                float subtotal = 0;
+                Collection<OrdenCompra> ordenesExistentes = repositorioOC.findOrdenesNoFinalizadasNiCanceladasByArticuloProveedor(ap);
+                System.out.println("orden");
+                System.out.println(ordenesExistentes);
+                if (!ordenesExistentes.isEmpty()) {
+                    System.out.println("ya existe la orden");
+                    // Ya hay una orden "activa" para este artículoProveedor. Saltar al siguiente.
+                    continue;
                 }
-                if (!ordenCompra.getOrdenCompraDetalles().isEmpty()) {
-                    repositorioOC.save(ordenCompra);
-                    System.out.println("Orden generada: " + ordenCompra);
-                } else {
-                    System.out.println("No se creó la orden para proveedor " + proveedor.getNombreProveedor() + " porque no había artículos sin orden existente.");
+
+                int cantidad = ap.getArticulo().getPuntoPedido() - ap.getArticulo().getStock();
+                if (cantidad <= 0) {
+                    System.out.println("Ya hay existencias del producto: " + ap.getArticulo().getNombre());
+                    continue;
                 }
+                subtotal = cantidad * ap.getCostoUnitario();
+
+                OrdenCompraDetalle OCDetalle = OrdenCompraDetalle.builder()
+                        .articuloProveedor(ap)
+                        .cantidad(cantidad)
+                        .subTotal(subtotal)
+                        .build();
+                ordenCompra.addOrdenCompraDetalle(OCDetalle);
+
+            }
+            if (!ordenCompra.getOrdenCompraDetalles().isEmpty()) {
+                repositorioOC.save(ordenCompra);
+                System.out.println("Orden generada: " + ordenCompra.getId() + "para el proveedor: " + proveedor.getNombreProveedor());
+            } else {
+                System.out.println("No se creó la orden para proveedor " + proveedor.getNombreProveedor() + " porque no había artículos sin orden existente.");
             }
         }
     }

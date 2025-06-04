@@ -24,7 +24,7 @@ public interface RepositorioArticuloProveedor extends BaseRepository<ArticuloPro
     @Query("SELECT ap FROM ArticuloProveedor ap " +
             "WHERE ap.proveedor.id = :idProveedor " +
             "AND ap.articulo.proximaRevision <= CURRENT_DATE " +
-            "AND ap.isPredeterminado = 1 " +
+            "AND ap.isPredeterminado = True " +
             "AND ap.modeloInventario.nombreModelo = 'Tiempo Fijo'")
     Collection<ArticuloProveedor> findTiempoFijo(@Param("idProveedor") Long idProveedor);
 }
