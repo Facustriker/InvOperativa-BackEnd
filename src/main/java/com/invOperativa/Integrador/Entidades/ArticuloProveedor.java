@@ -36,10 +36,10 @@ public class ArticuloProveedor extends BaseEntity{
     private float nivelServicio;
 
     @Column(name = "stockSeguridad")
-    private int stockSeguridad;
+    private Integer stockSeguridad;
 
     @Column(name = "loteOptimo")
-    private int loteOptimo;
+    private Integer loteOptimo;
 
     @ManyToOne
     @JoinColumn(name = "articulo")

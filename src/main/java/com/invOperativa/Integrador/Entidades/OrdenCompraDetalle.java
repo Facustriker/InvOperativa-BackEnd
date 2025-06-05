@@ -16,7 +16,7 @@ public class OrdenCompraDetalle extends BaseEntity{
     private int cantidad;
 
     @Column(name = "subTotal")
-    private int subTotal;
+    private float subTotal;
 
     @ManyToOne
     @JoinColumn(name = "articuloProveedor")

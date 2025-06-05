@@ -32,5 +32,17 @@ public interface RepositorioArticuloProveedor extends BaseRepository<ArticuloPro
             "AND ap.articulo.fhBajaArticulo IS NULL")
     Collection<ArticuloProveedor> getArticulosProveedorVigentesPorArticuloId(@Param("idArticulo") Long idArticulo);
 
+    // Metodo que te devuelve el ArticuloProveedor predeterminado para un artículo
+    Optional<ArticuloProveedor> findByArticuloIdAndIsPredeterminadoTrueAndFechaBajaIsNull(Long articuloId);
+
+    @Query("SELECT ap FROM ArticuloProveedor ap " +
+                        "WHERE ap.proveedor.id = :idProveedor " +
+                        "AND ap.articulo.proximaRevision <= CURRENT_DATE " +
+                        "AND ap.isPredeterminado = True " +
+                        "AND ap.modeloInventario.nombreModelo = 'Tiempo Fijo'")
+    Collection<ArticuloProveedor> findTiempoFijo(@Param("idProveedor") Long idProveedor);
+
+    //Devuelve ArticuloProveedor relacionados a un proveedor
+    Collection<ArticuloProveedor> findByProveedorIdAndFechaBajaIsNull(Long proveedorId);
 }
 

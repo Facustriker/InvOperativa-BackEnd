@@ -1,5 +1,6 @@
 package com.invOperativa.Integrador.CU.CU13_ABMArticulo;
 
+import com.invOperativa.Integrador.CU.CU10_AsignarProveedor.ExpertoAsignarProveedor;
 import com.invOperativa.Integrador.Config.CustomException;
 import com.invOperativa.Integrador.Entidades.Articulo;
 import com.invOperativa.Integrador.Entidades.ArticuloProveedor;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,32 +28,90 @@ public class ExpertoABMArticulo {
     @Autowired
     private final RepositorioArticuloProveedor repositorioArticuloProveedor;
 
-    // Da de alta el articulo verificando los valores
-    @Transactional
-    public void altaArticulo(Articulo art){
+    // Metodo auxiliar para revisar articulos que llegan
+    public void revisarArticulo(Articulo art){
 
-        if (art.getPrecioUnitario() <= 0) {
-            throw new CustomException("El precio unitario no puede ser menor o igual a 0");
+        if (art.getCostoAlmacenamiento() < 0){
+            throw new CustomException("El costo de almacenamiento no puede ser menor a 0");
+        }
+
+        if (art.getDemanda() < 0){
+            throw new CustomException("La demanda no puede ser menor a 0");
         }
 
         if (art.getDescripcionArt().trim().isEmpty()){
             throw new CustomException("La descripción del artículo no puede estar vacía");
         }
 
+        if (art.getInventarioMaxArticulo() < 0){
+            throw new CustomException("El inventario maximo no puede ser menor a 0");
+        }
+
         if (art.getNombre().trim().isEmpty()){
             throw new CustomException("El nombre del artículo no puede estar vacío");
         }
 
-        if (art.getCostoAlmacenamiento() < 0){
-            throw new CustomException("El costo de almacenamiento no puede ser negativo");
+        if (art.getPrecioUnitario() <= 0) {
+            throw new CustomException("El precio unitario no puede ser menor o igual a 0");
         }
+
+        if (art.getStock() < 0) {
+            throw new CustomException("El stock no puede ser menor a 0");
+        }
+
+    }
+
+    // Metodo auxiliar para revisar articulos que llegan
+    public void revisarArticuloDTO(DTOArticulo art){
+
+        if (art.getCostoAlmacenamiento() < 0){
+            throw new CustomException("El costo de almacenamiento no puede ser menor a 0");
+        }
+
+        if (art.getDemanda() < 0){
+            throw new CustomException("La demanda no puede ser menor a 0");
+        }
+
+        if (art.getDescripcionArt().trim().isEmpty()){
+            throw new CustomException("La descripción del artículo no puede estar vacía");
+        }
+
+        if (art.getInventarioMaxArticulo() < 0){
+            throw new CustomException("El inventario maximo no puede ser menor a 0");
+        }
+
+        if (art.getNombre().trim().isEmpty()){
+            throw new CustomException("El nombre del artículo no puede estar vacío");
+        }
+
+        if (art.getPrecioUnitario() <= 0) {
+            throw new CustomException("El precio unitario no puede ser menor o igual a 0");
+        }
+
+        if (art.getStock() < 0) {
+            throw new CustomException("El stock no puede ser menor a 0");
+        }
+
+    }
+
+    // Da de alta el articulo verificando los valores
+    @Transactional
+    public void altaArticulo(DTOArticulo art){
+
+        revisarArticuloDTO(art);
 
         Articulo articulo = Articulo.builder()
                 .costoAlmacenamiento(art.getCostoAlmacenamiento())
+                .demanda(art.getDemanda())
                 .descripcionArt(art.getDescripcionArt())
-                .precioUnitario(art.getPrecioUnitario())
                 .fhBajaArticulo(null)
+                .inventarioMaxArticulo(art.getInventarioMaxArticulo())
                 .nombre(art.getNombre())
+                .precioUnitario(art.getPrecioUnitario())
+                .proximaRevision(null)
+                .puntoPedido(null)
+                .stock(art.getStock())
+                .tiempoFijo(null)
                 .build();
 
         repositorio.save(articulo);
@@ -63,26 +123,31 @@ public class ExpertoABMArticulo {
 
         Articulo artExistente = repositorio.findById(art.getId()).orElseThrow(() -> new CustomException("No existe el articulo que desea modificar") );
 
-        if (art.getPrecioUnitario() <= 0) {
-            throw new CustomException("El precio unitario no puede ser menor o igual a 0");
+        revisarArticulo(art);
+
+        if (art.getDemanda() != artExistente.getDemanda()){
+
+            ArticuloProveedor proveedorPredeterminado = repositorioArticuloProveedor.findByArticuloIdAndIsPredeterminadoTrueAndFechaBajaIsNull(artExistente.getId()).orElseThrow(()->new CustomException("No hay proveedor predeterminado"));
+
+            int demanda = art.getDemanda();
+            float tiempoEntrega = proveedorPredeterminado.getDemoraEntrega();
+            float nivelServicio = proveedorPredeterminado.getNivelServicio();
+            double z = ArticuloProveedor.getZ(nivelServicio);
+            double desviacion = 0.25F * Math.sqrt(tiempoEntrega);
+
+            int puntoPedido = (int) Math.round((demanda / 365.0) * tiempoEntrega + z * desviacion);
+
+            artExistente.setPuntoPedido(puntoPedido);
+
         }
 
-        if (art.getDescripcionArt().trim().isEmpty()){
-            throw new CustomException("La descripción del artículo no puede estar vacía");
-        }
-
-        if (art.getNombre().trim().isEmpty()){
-            throw new CustomException("El nombre del artículo no puede estar vacío");
-        }
-
-        if (art.getCostoAlmacenamiento() < 0){
-            throw new CustomException("El costo de almacenamiento no puede ser negativo");
-        }
-
-        artExistente.setDescripcionArt(art.getDescripcionArt());
-        artExistente.setNombre(art.getNombre());
         artExistente.setCostoAlmacenamiento(art.getCostoAlmacenamiento());
+        artExistente.setDescripcionArt(art.getDescripcionArt());
+        artExistente.setInventarioMaxArticulo(art.getInventarioMaxArticulo());
         artExistente.setPrecioUnitario(art.getPrecioUnitario());
+        artExistente.setStock(art.getStock());
+        artExistente.setNombre(art.getNombre());
+        artExistente.setDemanda(art.getDemanda());
 
         repositorio.save(artExistente);
 

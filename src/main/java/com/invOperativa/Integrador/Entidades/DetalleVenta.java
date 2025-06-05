@@ -16,7 +16,7 @@ public class DetalleVenta extends BaseEntity{
     private int cant;
 
     @Column(name = "subTotal")
-    private int subTotal;
+    private float subTotal;
 
     @ManyToOne
     @JoinColumn(name = "articulo")

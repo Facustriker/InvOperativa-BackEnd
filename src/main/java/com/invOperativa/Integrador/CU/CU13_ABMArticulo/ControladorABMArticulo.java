@@ -16,7 +16,7 @@ public class ControladorABMArticulo {
 
     // Dar de alta nuevo articulo
     @PostMapping("/alta")
-    public ResponseEntity<?> alta(@RequestParam Articulo art) {
+    public ResponseEntity<?> alta(@RequestParam DTOArticulo art) {
         experto.altaArticulo(art);
         return ResponseEntity.ok().build();
     }

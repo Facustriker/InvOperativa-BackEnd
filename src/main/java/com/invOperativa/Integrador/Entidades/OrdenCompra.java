@@ -22,9 +22,16 @@ public class OrdenCompra extends BaseEntity{
     @Column(name = "fhBajaOrdenCompra")
     private Date fhBajaOrdenCompra;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @Column(name = "isAuto")
+    private Boolean isAuto;
+
+    @ManyToOne
     @JoinColumn(name = "estadoOrdenCompra")
     private EstadoOrdenCompra estadoOrdenCompra;
+
+    @ManyToOne
+    @JoinColumn(name = "proveedor")
+    private Proveedor proveedor;
 
     @JoinColumn(name = "ordenCompraDetalles")
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
