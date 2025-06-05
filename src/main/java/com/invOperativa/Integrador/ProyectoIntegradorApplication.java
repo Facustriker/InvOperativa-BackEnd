@@ -41,8 +41,8 @@ public class ProyectoIntegradorApplication {
 	@Bean
 	public CommandLineRunner init() {
 		return args -> {
-			/*
 
+/*
 			ModeloInventario modeloLoteFijo = ModeloInventario.builder()
 					.nombreModelo("Lote Fijo")
 					.build();
@@ -97,7 +97,7 @@ public class ProyectoIntegradorApplication {
 					.precioUnitario(2250.30F)
 					.proximaRevision(null)
 					.puntoPedido(900)
-					.stock(5000)
+					.stock(100)
 					.tiempoFijo(25)
 					.build();
 
@@ -123,7 +123,7 @@ public class ProyectoIntegradorApplication {
 					.precioUnitario(10250.30F)
 					.proximaRevision(null)
 					.puntoPedido(2000)
-					.stock(16000)
+					.stock(200)
 					.tiempoFijo(2)
 					.build();
 
@@ -269,8 +269,8 @@ public class ProyectoIntegradorApplication {
 
 			repositorioOrdenCompra.save(oc1);
 			repositorioOrdenCompra.save(oc2);
+*/
 
-			 */
 		};
 	}
 
