@@ -1,4 +1,4 @@
-package com.invOperativa.Integrador.Entidades;
+    package com.invOperativa.Integrador.Entidades;
 
 import com.invOperativa.Integrador.Config.CustomException;
 import jakarta.persistence.*;
@@ -29,7 +29,7 @@ public class ArticuloProveedor extends BaseEntity{
     @Column(name = "isPredeterminado", nullable = false)
     private boolean isPredeterminado;
 
-    @Column(name = "precioUnitario")
+    @Column(name = "CostoUnitario")
     private float costoUnitario;
 
     @Column(name = "nivelServicio")
