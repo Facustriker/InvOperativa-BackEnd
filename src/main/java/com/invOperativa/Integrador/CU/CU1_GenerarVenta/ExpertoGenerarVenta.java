@@ -30,6 +30,8 @@ public class ExpertoGenerarVenta {
     @Transactional
     public void nueva(DTOGenerarVenta dto) {
 
+        List<Long> articulosComprar = new ArrayList<>();
+
         List<DTODetalleGenerarVenta> detalles = dto.getDetalles();
 
         if (detalles.isEmpty()) {
@@ -75,7 +77,7 @@ public class ExpertoGenerarVenta {
 
             if (articulo.getPuntoPedido() != null){
                 if (nuevoStock <= articulo.getPuntoPedido()){
-                    expertoGenerarOrdenDeCompra.generacionAutomatica(articulo.getId());
+                    articulosComprar.add(articulo.getId());
                 }
             }
 
@@ -88,6 +90,10 @@ public class ExpertoGenerarVenta {
         }
 
         venta.setMontoTotal(dto.getTotal());
+
+        if (!articulosComprar.isEmpty()){
+            expertoGenerarOrdenDeCompra.generacionAutomatica(articulosComprar);
+        }
 
         for (DetalleVenta detalle : detallesAuxiliares){
             DetalleVenta detalleAuxiliar = repositorioDetalleVenta.save(detalle);
