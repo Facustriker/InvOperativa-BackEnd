@@ -34,6 +34,9 @@ public class ProyectoIntegradorApplication {
 	@Autowired
 	private RepositorioOrdenCompra repositorioOrdenCompra;
 
+	@Autowired
+	private RepositorioEstadoOrdenCompra repositorioEstadoOrdenCompra;
+
 
 	public static void main(String[] args) {
 		SpringApplication.run(ProyectoIntegradorApplication.class, args);
@@ -43,7 +46,7 @@ public class ProyectoIntegradorApplication {
 	@Bean
 	public CommandLineRunner init() {
 		return args -> {
-			/*
+
 
 			ModeloInventario modeloLoteFijo = ModeloInventario.builder()
 					.nombreModelo("Lote Fijo")
@@ -233,6 +236,9 @@ public class ProyectoIntegradorApplication {
 					.nombreEstadoOrdenCompra("Finalizada")
 					.build();
 
+			estado1 = repositorioEstadoOrdenCompra.save(estado1);
+			estado2 = repositorioEstadoOrdenCompra.save(estado2);
+
 			OrdenCompraDetalle ocd1 = OrdenCompraDetalle.builder()
 					.cantidad(50)
 					.articuloProveedor(artProv2)
@@ -272,7 +278,7 @@ public class ProyectoIntegradorApplication {
 			repositorioOrdenCompra.save(oc1);
 			repositorioOrdenCompra.save(oc2);
 
-			 */
+
 		};
 	}
 
