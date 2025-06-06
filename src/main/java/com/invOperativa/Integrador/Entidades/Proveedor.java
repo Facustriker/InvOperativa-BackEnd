@@ -19,6 +19,7 @@ public class Proveedor extends BaseEntity{
     @Column(name = "fhBajaProveedor")
     private Date fhBajaProveedor;
 
+
     @Column(name = "nombreProveedor")
     private String nombreProveedor;
 }
