@@ -53,6 +53,7 @@ public class ExpertoListarArticuloXProveedores {
 
             DTOArticuloProv aux = DTOArticuloProv.builder()
                     .idArticulo(art.getId())
+                    .nombreArticulo(art.getNombre())
                     .descripcionArticulo(art.getDescripcionArt())
                     .costoPedido(ap.getCostoPedido())
                     .demoraEntrega(ap.getDemoraEntrega())
@@ -60,6 +61,7 @@ public class ExpertoListarArticuloXProveedores {
                     .modeloInventario(ap.getModeloInventario().getNombreModelo())
                     .isPredeterminado(ap.isPredeterminado())
                     .precioUnitario(art.getPrecioUnitario())
+                    .stock(art.getStock())
                     .build();
             dtoArticulos.add(aux);
         }

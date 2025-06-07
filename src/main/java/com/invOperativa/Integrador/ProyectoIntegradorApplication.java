@@ -44,7 +44,7 @@ public class ProyectoIntegradorApplication {
 	public CommandLineRunner init() {
 		return args -> {
 
-/*
+
 			ModeloInventario modeloLoteFijo = ModeloInventario.builder()
 					.nombreModelo("Lote Fijo")
 					.build();
@@ -271,7 +271,7 @@ public class ProyectoIntegradorApplication {
 
 			repositorioOrdenCompra.save(oc1);
 			repositorioOrdenCompra.save(oc2);
-*/
+
 
 		};
 	}

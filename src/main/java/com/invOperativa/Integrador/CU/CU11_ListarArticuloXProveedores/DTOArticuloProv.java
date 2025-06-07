@@ -13,6 +13,8 @@ public class DTOArticuloProv {
 
     private Long idArticulo;
 
+    private String nombreArticulo;
+
     private String modeloInventario;
 
     private Boolean isPredeterminado;
@@ -26,5 +28,7 @@ public class DTOArticuloProv {
     private int demoraEntrega;
 
     private float costoPedido;
+
+    private int stock;
 
 }
