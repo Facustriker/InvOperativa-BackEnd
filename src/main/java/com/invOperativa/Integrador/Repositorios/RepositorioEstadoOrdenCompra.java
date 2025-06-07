@@ -21,4 +21,10 @@ public interface RepositorioEstadoOrdenCompra extends BaseRepository<EstadoOrden
     Optional<EstadoOrdenCompra> obtenerEstadoVigentePorID(@Param("idEstadoOrdenCompra") Long idEstadoOrdenCompra);
 
     EstadoOrdenCompra findByNombreEstadoOrdenCompraAndFhBajaEstadoOrdenCompraIsNull(String nombreEstadoOrdenCompra);
+
+    @Query("SELECT e " +
+            "FROM EstadoOrdenCompra e " +
+            "WHERE nombreEstadoOrdenCompra = :nombreEstado " +
+            "AND (fhBajaEstadoOrdenCompra IS NULL OR fhBajaEstadoOrdenCompra > CURRENT_TIMESTAMP)")
+    Optional<EstadoOrdenCompra> obtenerEstadoVigentePorNombre(@Param("nombreEstado") String nombreEstado);
 }
