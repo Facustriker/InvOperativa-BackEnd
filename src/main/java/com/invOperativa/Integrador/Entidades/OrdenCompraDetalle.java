@@ -9,7 +9,7 @@ import lombok.*;
 @Setter
 @Builder
 @Entity
-@Table(name = "OrdenCompraDetalle")
+@Table(name = "OrdenCompraDetalles")
 public class OrdenCompraDetalle extends BaseEntity{
 
     @Column(name = "cantidad")
