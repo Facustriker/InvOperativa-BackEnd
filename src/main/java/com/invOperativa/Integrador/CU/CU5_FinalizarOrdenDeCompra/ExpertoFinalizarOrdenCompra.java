@@ -5,8 +5,10 @@ import com.invOperativa.Integrador.Entidades.Articulo;
 import com.invOperativa.Integrador.Entidades.EstadoOrdenCompra;
 import com.invOperativa.Integrador.Entidades.OrdenCompra;
 import com.invOperativa.Integrador.Entidades.OrdenCompraDetalle;
+import com.invOperativa.Integrador.Entidades.ModeloInventario;
 import com.invOperativa.Integrador.Repositorios.RepositorioArticulo;
 import com.invOperativa.Integrador.Repositorios.RepositorioEstadoOrdenCompra;
+import com.invOperativa.Integrador.Repositorios.RepositorioModeloInventario;
 import com.invOperativa.Integrador.Repositorios.RepositorioOrdenCompra;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,9 @@ public class ExpertoFinalizarOrdenCompra {
 
     @Autowired
     private final RepositorioArticulo repositorioArticulo;
+
+    @Autowired
+    private final RepositorioModeloInventario repositorioModeloInventario;
 
 
 
@@ -82,11 +87,18 @@ public class ExpertoFinalizarOrdenCompra {
             throw new CustomException("Error, no se encontró el estado Finalizada");
         }
 
+        // Buscar el modelo de tiempo fijo
+        ModeloInventario modeloTiempoFijo = repositorioModeloInventario.getModelosVigentes().stream()
+                .filter(m -> m.getNombreModelo().equals("Tiempo Fijo"))
+                .findFirst()
+                .orElseThrow(() -> new CustomException("Error, no se encontró el modelo de tiempo fijo"));
+
         // Actualizar el estado de la orden
         ordenCompra.get().setEstadoOrdenCompra(estadoFinalizada);
 
         // Actualizar el inventario y verificar punto de pedido
         boolean requiereAtencion = false;
+        DTORespuestaFinalizarOC respuesta = DTORespuestaFinalizarOC.builder().build();
 
         for (OrdenCompraDetalle detalle : ordenCompra.get().getOrdenCompraDetalles()) {
             Articulo articulo = detalle.getArticuloProveedor().getArticulo();
@@ -96,11 +108,16 @@ public class ExpertoFinalizarOrdenCompra {
             articulo.setStock(nuevoStock);
             repositorioArticulo.save(articulo);
 
-            // Verificar si es modelo LoteFijo y si no supera el punto de pedido
-            if (detalle.getArticuloProveedor().getModeloInventario().getNombreModelo().equals("Lote Fijo") 
+            // Verificar si NO es modelo Tiempo fijo y si no supera el punto de pedido
+            if (detalle.getArticuloProveedor().getModeloInventario().getId() != modeloTiempoFijo.getId()
                 && articulo.getPuntoPedido() != null 
                 && nuevoStock <= articulo.getPuntoPedido()) {
                 requiereAtencion = true;
+                respuesta.addArticuloAtencion(
+                    articulo.getNombre(),
+                    nuevoStock,
+                    articulo.getPuntoPedido()
+                );
             }
         }
 
@@ -108,8 +125,7 @@ public class ExpertoFinalizarOrdenCompra {
         repositorioOrdenCompra.save(ordenCompra.get());
 
         //Si no se superó el punto de pedido, mando un bool avisando
-        return DTORespuestaFinalizarOC.builder()
-                .requiereAtencion(requiereAtencion)
-                .build();
+        respuesta.setRequiereAtencion(requiereAtencion);
+        return respuesta;
     }
 }
