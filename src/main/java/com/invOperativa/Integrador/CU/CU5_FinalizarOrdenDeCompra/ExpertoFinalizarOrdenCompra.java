@@ -101,6 +101,16 @@ public class ExpertoFinalizarOrdenCompra {
                 && articulo.getPuntoPedido() != null 
                 && nuevoStock <= articulo.getPuntoPedido()) {
                 requiereAtencion = true;
+<<<<<<< Updated upstream
+=======
+                respuesta.addArticuloAtencion(
+                    articulo.getNombre(),
+                    nuevoStock,
+                    articulo.getPuntoPedido(),
+                    detalle.getId(),
+                    detalle.getSubTotal()
+                );
+>>>>>>> Stashed changes
             }
         }
 

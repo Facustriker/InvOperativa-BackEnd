@@ -44,7 +44,11 @@ public class ProyectoIntegradorApplication {
 	public CommandLineRunner init() {
 		return args -> {
 
+<<<<<<< Updated upstream
 /*
+=======
+
+>>>>>>> Stashed changes
 			ModeloInventario modeloLoteFijo = ModeloInventario.builder()
 					.nombreModelo("Lote Fijo")
 					.build();
@@ -201,7 +205,7 @@ public class ProyectoIntegradorApplication {
 					.stockSeguridad(300)
 					.proveedor(pr3)
 					.articulo(art4)
-					.modeloInventario(modeloTiempoFijo)
+					.modeloInventario(modeloLoteFijo)
 					.build();
 
 			ArticuloProveedor artProv6 = ArticuloProveedor.builder()
@@ -215,7 +219,7 @@ public class ProyectoIntegradorApplication {
 					.stockSeguridad(400)
 					.proveedor(pr4)
 					.articulo(art4)
-					.modeloInventario(modeloTiempoFijo)
+					.modeloInventario(modeloLoteFijo)
 					.build();
 
 			artProv1 = repositorioArticuloProveedor.save(artProv1);
@@ -253,6 +257,16 @@ public class ProyectoIntegradorApplication {
 					.articuloProveedor(artProv4)
 					.build();
 
+			OrdenCompraDetalle ocd5 = OrdenCompraDetalle.builder()
+					.cantidad(100)
+					.articuloProveedor(artProv4)
+					.build();
+
+			OrdenCompraDetalle ocd6 = OrdenCompraDetalle.builder()
+					.cantidad(150)
+					.articuloProveedor(artProv6)
+					.build();
+
 			OrdenCompra oc1 = OrdenCompra.builder()
 					.fhAltaOrdenCompra(new Date())
 					.build();
@@ -269,10 +283,24 @@ public class ProyectoIntegradorApplication {
 			oc2.setEstadoOrdenCompra(estado2);
 			oc2.addOrdenCompraDetalle(ocd4);
 
+			OrdenCompra oc3 = OrdenCompra.builder()
+					.fhAltaOrdenCompra(new Date())
+					.build();
+			oc3.setEstadoOrdenCompra(estado3);
+			oc3.addOrdenCompraDetalle(ocd5);
+			oc3.addOrdenCompraDetalle(ocd6);
+
 			repositorioOrdenCompra.save(oc1);
 			repositorioOrdenCompra.save(oc2);
+<<<<<<< Updated upstream
 */
 
+=======
+			repositorioOrdenCompra.save(oc3);
+
+
+			
+>>>>>>> Stashed changes
 		};
 	}
 
