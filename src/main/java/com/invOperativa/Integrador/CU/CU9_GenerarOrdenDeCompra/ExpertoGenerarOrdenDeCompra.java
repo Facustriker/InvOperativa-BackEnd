@@ -16,17 +16,52 @@ public class ExpertoGenerarOrdenDeCompra {
     private final RepositorioArticuloProveedor repositorioArticuloProveedor;
     private final RepositorioOrdenCompra repositorioOrdenCompra;
     private final RepositorioEstadoOrdenCompra repositorioEstadoOrdenCompra;
-    private final RepositorioProveedor repositorioProveedor;
     private final RepositorioOrdenCompraDetalle repositorioOrdenCompraDetalle;
 
+    // Busca ordenes de compra pendientes para ese mismo articulo
+    public List<Long> buscarPendientes(List<Long> articulosIds){
+
+        return repositorioOrdenCompra.findArticuloIdsEnOrdenesPendientesOEnviadas(articulosIds);
+
+    }
+
     @Transactional
-    public void nuevaOrden(DTONuevaOrden dto){
+    public List<String> nuevaOrden(DTONuevaOrden dto){
 
         List<DTODetalleOrden> detalles = dto.getDetalles();
 
-        Long proveedorId = detalles.get(0).getArticuloProveedorId();
+        if (detalles == null || detalles.isEmpty()) {
+            throw new CustomException("La orden no contiene detalles");
+        }
 
-        Proveedor proveedor = repositorioProveedor.findActivoById(proveedorId).orElseThrow(()-> new CustomException("No existe un proveedor activo con ese id"));
+        // Extraer los IDs de artículos involucrados
+        List<Long> articuloIds = detalles.stream()
+                .map(DTODetalleOrden::getArticuloProveedorId)
+                .map(id -> repositorioArticuloProveedor.findByIdAndFechaBajaIsNull(id)
+                        .orElseThrow(() -> new CustomException("No existe un artículo-proveedor activo con id " + id)))
+                .map(ap -> ap.getArticulo().getId())
+                .toList();
+
+        // Verificar si ya están pedidos
+        List<Long> pendientesIds = buscarPendientes(articuloIds);
+
+        if (!pendientesIds.isEmpty() && !dto.isConfirmacion()) {
+            // Devuelvo los nombres de los artículos ya pedidos
+            List<String> nombres = pendientesIds.stream()
+                    .map(id -> repositorioArticulo.findById(id)
+                            .map(Articulo::getNombre)
+                            .orElse("Artículo desconocido (ID: " + id + ")"))
+                    .toList();
+            return nombres; // En este caso se interrumpe y el frontend decidirá
+        }
+
+        Long articuloProveedorId = detalles.get(0).getArticuloProveedorId();
+
+        ArticuloProveedor articuloProveedorAux = repositorioArticuloProveedor.findByIdAndFechaBajaIsNull(articuloProveedorId).orElseThrow(()-> new CustomException("No existe un articulo proveedor activo con ese id"));
+
+        Proveedor proveedor = articuloProveedorAux.getProveedor();
+
+        Long proveedorId = proveedor.getId();
 
         float totalAuxiliar = 0;
 
@@ -34,15 +69,17 @@ public class ExpertoGenerarOrdenDeCompra {
 
         for (DTODetalleOrden detalle : detalles){
 
-            if (!detalle.getArticuloProveedorId().equals(proveedorId)){
+            ArticuloProveedor articuloProveedor = repositorioArticuloProveedor.findById(detalle.getArticuloProveedorId()).orElseThrow(()-> new CustomException("No existe uno de los artículo-proveedor que busca"));
+
+            Long proveedorId1 = articuloProveedor.getProveedor().getId();
+
+            if (!proveedorId1.equals(proveedorId)){
                 throw new CustomException("Uno de los artículos es de un proveedor distinto");
             }
 
             if (detalle.getCantidad() <= 0) {
                 throw new CustomException("La cantidad a pedir debe ser mayor a 0");
             }
-
-            ArticuloProveedor articuloProveedor = repositorioArticuloProveedor.findById(detalle.getArticuloProveedorId()).orElseThrow(()-> new CustomException("No existe uno de los artículo-proveedor que busca"));
 
             float subTotal = detalle.getCantidad() * articuloProveedor.getArticulo().getPrecioUnitario();
 
@@ -57,6 +94,8 @@ public class ExpertoGenerarOrdenDeCompra {
                     .cantidad(detalle.getCantidad())
                     .subTotal(detalle.getSubTotal())
                     .build();
+
+            ordenCompraDetalles.add(ordenCompraDetalle);
 
             repositorioOrdenCompraDetalle.save(ordenCompraDetalle);
 
@@ -78,6 +117,8 @@ public class ExpertoGenerarOrdenDeCompra {
 
         repositorioOrdenCompra.save(ordenCompra);
 
+        return new ArrayList<>(); // Lista vacía, estamos bien
+
    }
 
     @Transactional
@@ -85,6 +126,13 @@ public class ExpertoGenerarOrdenDeCompra {
 
         if (articuloIds == null || articuloIds.isEmpty()) {
             return;
+        }
+
+        List<Long> pendientesId = buscarPendientes(articuloIds);
+
+        // No pediremos los articulos que ya esten en una orden de compra pendiente
+        if (!pendientesId.isEmpty()){
+            articuloIds.removeAll(pendientesId);
         }
 
         List<Articulo> articulos = repositorioArticulo.findAllById(articuloIds);
@@ -111,6 +159,7 @@ public class ExpertoGenerarOrdenDeCompra {
             }
 
             Proveedor prov = apPredeterminado.getProveedor();
+
             if (prov == null) {
                 throw new CustomException("El articulo-proveedor no tiene un proveedor válido");
             }
@@ -121,10 +170,11 @@ public class ExpertoGenerarOrdenDeCompra {
                     .add(apPredeterminado);
         }
 
-        // 3) Ahora recorremos cada entrada del Map y generamos una OrdenCompra única por proveedor.
+        // Ahora recorremos cada entrada del Map y generamos una OrdenCompra única por proveedor.
         for (Map.Entry<Proveedor, List<ArticuloProveedor>> entrada : agrupadosPorProveedor.entrySet()) {
 
             Proveedor proveedor = entrada.getKey();
+
             List<ArticuloProveedor> listaAP = entrada.getValue();
 
             OrdenCompra oc = OrdenCompra.builder()
@@ -133,7 +183,6 @@ public class ExpertoGenerarOrdenDeCompra {
                     .isAuto(true)
                     .proveedor(proveedor)
                     .build();
-
 
             for (ArticuloProveedor ap : listaAP) {
 
@@ -156,6 +205,7 @@ public class ExpertoGenerarOrdenDeCompra {
 
             // Persistimos la OrdenCompra completa (gracias a Cascade.ALL, también persiste los detalles)
             repositorioOrdenCompra.save(oc);
+
         }
     }
 
@@ -165,4 +215,5 @@ public class ExpertoGenerarOrdenDeCompra {
                 .findByNombreEstadoOrdenCompra("Pendiente")
                 .orElseThrow(() -> new CustomException("No existe estado 'Pendiente' en EstadoOrdenCompra"));
     }
+
 }

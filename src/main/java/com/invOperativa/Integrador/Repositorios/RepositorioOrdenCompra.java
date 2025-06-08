@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 public interface RepositorioOrdenCompra extends BaseRepository<OrdenCompra, Long>{
@@ -40,5 +41,21 @@ public interface RepositorioOrdenCompra extends BaseRepository<OrdenCompra, Long
             "WHERE id = :idOrdenCompra " +
             "AND (fhBajaOrdenCompra IS NULL OR fhBajaOrdenCompra > CURRENT_TIMESTAMP)")
     Optional<OrdenCompra> obtenerOCVigentePorID(@Param("idOrdenCompra") Long idOrdenCompra);
+
+    @Query("""
+    SELECT DISTINCT ap.articulo.id
+    FROM OrdenCompra oc
+    JOIN oc.estadoOrdenCompra eoc
+    JOIN oc.ordenCompraDetalles ocd
+    JOIN ocd.articuloProveedor ap
+    WHERE eoc.nombreEstadoOrdenCompra IN ('Pendiente', 'Enviada')
+      AND ap.articulo.id IN :idsArticulos
+      AND ap.articulo.fhBajaArticulo IS NULL
+      AND ap.fechaBaja IS NULL
+""")
+    List<Long> findArticuloIdsEnOrdenesPendientesOEnviadas(
+            @Param("idsArticulos") List<Long> idsArticulos
+    );
+
 
 }

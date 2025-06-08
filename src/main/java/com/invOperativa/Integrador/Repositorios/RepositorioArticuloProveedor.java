@@ -44,5 +44,8 @@ public interface RepositorioArticuloProveedor extends BaseRepository<ArticuloPro
 
     //Devuelve ArticuloProveedor relacionados a un proveedor
     Collection<ArticuloProveedor> findByProveedorIdAndFechaBajaIsNull(Long proveedorId);
+
+    // Devuelve el articulo proveedor activo según el id
+    Optional<ArticuloProveedor> findByIdAndFechaBajaIsNull(Long id);
 }
 

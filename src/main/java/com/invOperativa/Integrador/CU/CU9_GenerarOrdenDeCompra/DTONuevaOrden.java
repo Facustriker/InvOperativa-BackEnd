@@ -15,5 +15,6 @@ public class DTONuevaOrden {
 
     private List<DTODetalleOrden> detalles;
     private float total;
+    private boolean confirmacion;
 
 }

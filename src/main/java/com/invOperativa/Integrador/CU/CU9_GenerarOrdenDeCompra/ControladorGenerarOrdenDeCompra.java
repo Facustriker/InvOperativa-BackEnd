@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(path = "/GenerarOrdenCompra")
 public class ControladorGenerarOrdenDeCompra {
@@ -13,10 +15,10 @@ public class ControladorGenerarOrdenDeCompra {
     @Autowired
     public ExpertoGenerarOrdenDeCompra experto;
 
-    @PostMapping("/nuevaOrde")
+    @PostMapping("/nuevaOrden")
     public ResponseEntity<?> post(DTONuevaOrden dto){
-        experto.nuevaOrden(dto);
-        return ResponseEntity.ok().build();
+        List<String> yaPedidos = experto.nuevaOrden(dto);
+        return ResponseEntity.ok(yaPedidos);
     }
 
 }
