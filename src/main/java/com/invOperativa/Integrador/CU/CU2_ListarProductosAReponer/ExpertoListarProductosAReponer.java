@@ -47,6 +47,7 @@ public class ExpertoListarProductosAReponer {
                 DTOArticulo dtoArt = DTOArticulo.builder()
                         .id(art.getId())
                         .costoAlmacenamiento(art.getCostoAlmacenamiento())
+                        .nombreArt(art.getNombre())
                         .descripcionArt(art.getDescripcionArt())
                         .fhBajaArticulo(art.getFhBajaArticulo())
                         .inventarioMaxArticulo(art.getInventarioMaxArticulo())

@@ -15,6 +15,7 @@ public class DTOArticulo {
 
     private Long id;
     private float costoAlmacenamiento;
+    private String nombreArt;
     private String descripcionArt;
     private Date fhBajaArticulo;
     private int inventarioMaxArticulo;
