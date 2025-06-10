@@ -25,6 +25,10 @@ public class OrdenCompra extends BaseEntity{
     @Column(name = "isAuto")
     private Boolean isAuto;
 
+    @Column(name = "total")
+    private float total;
+
+
     @ManyToOne
     @JoinColumn(name = "estadoOrdenCompra")
     private EstadoOrdenCompra estadoOrdenCompra;

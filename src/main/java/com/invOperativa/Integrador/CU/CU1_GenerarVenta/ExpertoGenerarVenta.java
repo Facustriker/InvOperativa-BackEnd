@@ -24,11 +24,13 @@ public class ExpertoGenerarVenta {
     private final RepositorioArticulo repositorioArticulo;
     private final RepositorioDetalleVenta repositorioDetalleVenta;
     private final RepositorioVenta repositorioVenta;
-
     private final ExpertoGenerarOrdenDeCompra expertoGenerarOrdenDeCompra;
 
+    // Genera una nueva venta y verifica si hace falta generar ordenes de compra
     @Transactional
     public void nueva(DTOGenerarVenta dto) {
+
+        List<Long> articulosComprar = new ArrayList<>();
 
         List<DTODetalleGenerarVenta> detalles = dto.getDetalles();
 
@@ -75,7 +77,7 @@ public class ExpertoGenerarVenta {
 
             if (articulo.getPuntoPedido() != null){
                 if (nuevoStock <= articulo.getPuntoPedido()){
-                    expertoGenerarOrdenDeCompra.generacionAutomatica(articulo.getId());
+                    articulosComprar.add(articulo.getId());
                 }
             }
 
@@ -89,12 +91,45 @@ public class ExpertoGenerarVenta {
 
         venta.setMontoTotal(dto.getTotal());
 
+        if (!articulosComprar.isEmpty()){
+            expertoGenerarOrdenDeCompra.generacionAutomatica(articulosComprar);
+        }
+
         for (DetalleVenta detalle : detallesAuxiliares){
             DetalleVenta detalleAuxiliar = repositorioDetalleVenta.save(detalle);
             venta.addDetalleVenta(detalleAuxiliar);
         }
 
         repositorioVenta.save(venta);
+
+    }
+
+    // Devuelve un DTO con todas las ventas ordenadas de las mas reciente a la mas antigua
+    public List<DTOVenta> getAll(){
+
+        List<DTOVenta> dtoVentas = new ArrayList<>();
+
+        List<Venta> ventas = repositorioVenta.findAllByOrderByFhAltaVentaDesc();
+
+        if (ventas.isEmpty()){ // Si no hay devolvemos la lista vacía
+            return dtoVentas;
+        }
+
+        // Transformamos las ventas en DTO y las devolvemos
+        for (Venta venta : ventas) {
+
+            DTOVenta dto = DTOVenta.builder()
+                    .id(venta.getId())
+                    .monto(venta.getMontoTotal())
+                    .fechaAlta(venta.getFhAltaVenta())
+                    .cantidadArticulos(venta.getDetalleVentas().size())
+                    .build();
+
+            dtoVentas.add(dto);
+
+        }
+
+        return dtoVentas;
 
     }
 

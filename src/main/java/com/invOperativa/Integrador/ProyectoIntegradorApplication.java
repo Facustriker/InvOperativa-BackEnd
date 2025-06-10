@@ -37,7 +37,6 @@ public class ProyectoIntegradorApplication {
 	@Autowired
 	private RepositorioEstadoOrdenCompra repositorioEstadoOrdenCompra;
 
-
 	public static void main(String[] args) {
 		SpringApplication.run(ProyectoIntegradorApplication.class, args);
 		System.out.println("El proyecto está funcionando");
@@ -288,8 +287,5 @@ public class ProyectoIntegradorApplication {
 			
 		};
 	}
-
-	
-
 
 }

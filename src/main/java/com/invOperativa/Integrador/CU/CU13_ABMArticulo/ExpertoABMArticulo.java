@@ -125,7 +125,7 @@ public class ExpertoABMArticulo {
 
         revisarArticulo(art);
 
-        if (art.getDemanda() != artExistente.getDemanda()){
+        if (art.getDemanda() != artExistente.getDemanda() && art.getPuntoPedido()!=null && art.getPuntoPedido()>0){
 
             ArticuloProveedor proveedorPredeterminado = repositorioArticuloProveedor.findByArticuloIdAndIsPredeterminadoTrueAndFechaBajaIsNull(artExistente.getId()).orElseThrow(()->new CustomException("No hay proveedor predeterminado"));
 
@@ -160,6 +160,10 @@ public class ExpertoABMArticulo {
 
         if (repositorioOrdenCompraDetalle.existsArticuloEnOrdenPendienteOEnviada(id)) {
             throw new CustomException("El artículo está presente en una orden pendiente o enviada y no puede darse de baja.");
+        }
+
+        if (artExistente.getStock()>0){
+            throw new CustomException("El artículo tiene unidades en stock y no puede darse de baja.");
         }
 
         List<ArticuloProveedor> articuloProveedores = repositorioArticuloProveedor.findActivosByArticuloId(id);

@@ -1,8 +1,11 @@
     package com.invOperativa.Integrador.Entidades;
 
 import com.invOperativa.Integrador.Config.CustomException;
+import com.invOperativa.Integrador.Repositorios.RepositorioOrdenCompraDetalle;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.util.Date;
 
 @AllArgsConstructor
@@ -95,5 +98,21 @@ public class ArticuloProveedor extends BaseEntity{
         float i = 0.25F;
 
         return (float) (Math.sqrt(T+L)*d*i);
+    }
+
+    public int getCantidadTiempoFijo(RepositorioOrdenCompraDetalle repositorioOrdenCompraDetalle){
+
+        int demanda = articulo.getDemanda()/365;
+        int tiempoFijo = articulo.getTiempoFijo();
+        float z = (float) getZ(nivelServicio);
+        float sigma = getSigma(demanda , tiempoFijo, demoraEntrega);
+        int stockActual = articulo.getStock();
+        int stockPedido = repositorioOrdenCompraDetalle.obtenerCantidadTotalDeArticuloEnviado(articulo.getId());
+
+        float primerTermino = demanda * (tiempoFijo + demoraEntrega);
+        float segundoTermino = z * sigma - (stockActual + stockPedido);
+
+        return (int) (primerTermino + segundoTermino);
+
     }
 }
