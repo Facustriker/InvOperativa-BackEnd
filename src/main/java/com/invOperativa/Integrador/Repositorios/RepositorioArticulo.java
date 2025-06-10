@@ -29,4 +29,6 @@ public interface RepositorioArticulo extends BaseRepository<Articulo, Long>{
     Optional<Articulo> findActivoById(@Param("id") Long id);
 
 
+
+
 }

@@ -16,14 +16,14 @@ public class ControladorABMArticulo {
 
     // Dar de alta nuevo articulo
     @PostMapping("/alta")
-    public ResponseEntity<?> alta(@RequestParam DTOArticulo art) {
+    public ResponseEntity<?> alta(@RequestBody DTOArticulo art) {
         experto.altaArticulo(art);
         return ResponseEntity.ok().build();
     }
 
     // Modificar artículo existente
     @PutMapping("/modificar")
-    public ResponseEntity<?> modificar(@RequestParam Articulo art){
+    public ResponseEntity<?> modificar(@RequestBody Articulo art){
         experto.modificarArticulo(art);
         return ResponseEntity.ok().build();
     }
@@ -37,7 +37,7 @@ public class ControladorABMArticulo {
 
     // Lleva todos los articulos existentes
     @GetMapping("/getAll")
-    public ResponseEntity<?> getAll(@RequestParam boolean soloVigentes){
+    public ResponseEntity<?> getAll(@RequestBody boolean soloVigentes){
         List<Articulo> articulos = experto.traerTodos(soloVigentes);
         return ResponseEntity.ok(articulos);
     }

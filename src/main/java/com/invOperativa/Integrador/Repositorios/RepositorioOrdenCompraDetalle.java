@@ -31,5 +31,17 @@ public interface RepositorioOrdenCompraDetalle extends BaseRepository<OrdenCompr
     """)
         List<OrdenCompraDetalle> findByArticuloProveedorEnOrdenesPendientesOEnviadas(@Param("id") Long id);
 
+            @Query("""
+            SELECT SUM(d.cantidad) 
+            FROM OrdenCompraDetalle d 
+            JOIN d.articuloProveedor ap 
+            JOIN ap.articulo a 
+            JOIN OrdenCompra oc ON d MEMBER OF oc.ordenCompraDetalles
+            WHERE a.id = :articuloId 
+              AND oc.estadoOrdenCompra.nombreEstadoOrdenCompra = 'Enviado'
+              AND oc.fhBajaOrdenCompra IS NULL
+        """)
+            Integer obtenerCantidadTotalDeArticuloEnviado(@Param("articuloId") Long articuloId);
+
 
 }

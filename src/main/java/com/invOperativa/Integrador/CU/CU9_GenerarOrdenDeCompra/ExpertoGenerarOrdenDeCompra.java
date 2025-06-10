@@ -135,14 +135,19 @@ public class ExpertoGenerarOrdenDeCompra {
             articuloIds.removeAll(pendientesId);
         }
 
-        List<Articulo> articulos = repositorioArticulo.findAllById(articuloIds);
+        List<Articulo> articulos = new ArrayList<>();
+
+        for (Long id : articuloIds ){
+            Articulo articulo = repositorioArticulo.findActivoById(id).orElseThrow(()->new CustomException("No se encontró el artículo vigente con id " + id));
+            articulos.add(articulo);
+        }
 
         if (articulos.isEmpty()) {
             throw new CustomException("No se encontraron artículos válidos para generar la orden de compra");
         }
 
         //    Para cada Artículo, buscamos su ArticuloProveedor predeterminado.
-        //    Si un Artículo no tiene ArticuloProveedor predeterminado, lo ignoramos (o podríamos lanzar excepción).
+        //    Si un Artículo no tiene ArticuloProveedor predeterminado, lanzar excepción.
         //    Al mismo tiempo, vamos armando un Map<Proveedor, List<ArticuloProveedor>>.
 
         Map<Proveedor, List<ArticuloProveedor>> agrupadosPorProveedor = new HashMap<>();
@@ -214,6 +219,51 @@ public class ExpertoGenerarOrdenDeCompra {
         return repositorioEstadoOrdenCompra
                 .findByNombreEstadoOrdenCompra("Pendiente")
                 .orElseThrow(() -> new CustomException("No existe estado 'Pendiente' en EstadoOrdenCompra"));
+    }
+
+    public DTOSugerirOrden sugerirOrden(List<Long> ids){
+
+        List<DTOSugerirOrdenDetalle> sugerencias = new ArrayList<>();
+
+        if (ids.isEmpty()){
+            throw new CustomException("No se puede recibir un arreglo vacío de IDs");
+        }
+
+        float total = 0;
+
+        for (Long id : ids){
+
+            ArticuloProveedor articuloProveedor = repositorioArticuloProveedor.findByArticuloIdAndIsPredeterminadoTrueAndFechaBajaIsNull(id).orElseThrow(()-> new CustomException("No existe el articulo proveedor con id " + id));
+
+            Articulo articulo = articuloProveedor.getArticulo();
+
+            DTOSugerirOrdenDetalle dtoSugerirOrdenDetalle = DTOSugerirOrdenDetalle.builder()
+                    .articuloId(articulo.getId())
+                    .articuloNombre(articulo.getNombre())
+                    .articuloPrecio(articulo.getPrecioUnitario())
+                    .articuloProveedorId(articuloProveedor.getId())
+                    .build();
+
+            if (articulo.getPuntoPedido()!=null){
+                dtoSugerirOrdenDetalle.setCantidad(articuloProveedor.getLoteOptimo());
+                dtoSugerirOrdenDetalle.setSubTotal(articuloProveedor.getLoteOptimo() * articuloProveedor.getCostoUnitario());
+            } else {
+                int cantidad = articuloProveedor.getCantidadTiempoFijo(repositorioOrdenCompraDetalle);
+                dtoSugerirOrdenDetalle.setCantidad(cantidad);
+                dtoSugerirOrdenDetalle.setSubTotal(cantidad * articuloProveedor.getCostoUnitario());
+            }
+
+            total += dtoSugerirOrdenDetalle.getSubTotal();
+
+            sugerencias.add(dtoSugerirOrdenDetalle);
+
+        }
+
+        return DTOSugerirOrden.builder()
+                .detalles(sugerencias)
+                .total(total)
+                .build();
+
     }
 
 }
