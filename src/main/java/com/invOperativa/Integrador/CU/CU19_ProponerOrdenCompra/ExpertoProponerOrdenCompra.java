@@ -1,10 +1,7 @@
 package com.invOperativa.Integrador.CU.CU19_ProponerOrdenCompra;
 
 import com.invOperativa.Integrador.Entidades.*;
-import com.invOperativa.Integrador.Repositorios.RepositorioArticuloProveedor;
-import com.invOperativa.Integrador.Repositorios.RepositorioEstadoOrdenCompra;
-import com.invOperativa.Integrador.Repositorios.RepositorioOrdenCompra;
-import com.invOperativa.Integrador.Repositorios.RepositorioProveedor;
+import com.invOperativa.Integrador.Repositorios.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +25,9 @@ public class ExpertoProponerOrdenCompra {
 
     @Autowired
     protected RepositorioOrdenCompra repositorioOC;
+
+    @Autowired
+    protected RepositorioOrdenCompraDetalle repositorioOCDetalle;
 
     @Autowired
     protected RepositorioEstadoOrdenCompra repositorioEstadoOC;
@@ -67,12 +67,13 @@ public class ExpertoProponerOrdenCompra {
                     continue;
                 }
 
-                int cantidad = ap.getArticulo().getPuntoPedido() - ap.getArticulo().getStock();
+                // int cantidad = ap.getArticulo().getPuntoPedido() - ap.getArticulo().getStock();
+                int cantidad = ap.getCantidadTiempoFijo(repositorioOCDetalle);
                 if (cantidad <= 0) {
-                    System.out.println("Ya hay existencias del producto: " + ap.getArticulo().getNombre());
+                    System.out.println("El producto tiene existencias suficientes" + ap.getArticulo().getNombre());
                     continue;
                 }
-                subtotal = cantidad * ap.getCostoUnitario();
+                subtotal = cantidad * ap.getCostoUnitario() + ap.getCostoPedido();
 
                 OrdenCompraDetalle OCDetalle = OrdenCompraDetalle.builder()
                         .articuloProveedor(ap)
