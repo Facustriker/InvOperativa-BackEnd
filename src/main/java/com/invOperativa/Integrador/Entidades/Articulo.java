@@ -49,4 +49,12 @@ public class Articulo extends BaseEntity{
     @Column(name = "tiempoFijo")
     private Integer tiempoFijo;
 
+    public void calcularProximaRevision() {
+        if (this.tiempoFijo != null && this.tiempoFijo > 0) {
+            long milisegundosPorDia = 24L * 60L * 60L * 1000L;
+            Date nuevaFecha = new Date(System.currentTimeMillis() + this.tiempoFijo * milisegundosPorDia);
+            this.proximaRevision = nuevaFecha;
+        }
+    }
+
 }

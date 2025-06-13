@@ -57,7 +57,6 @@ public class ExpertoProponerOrdenCompra {
                     .build();
 
             for (ArticuloProveedor ap : articulosProveedor) {
-                float subtotal = 0;
                 Collection<OrdenCompra> ordenesExistentes = repositorioOC.findOrdenesNoFinalizadasNiCanceladasByArticuloProveedor(ap);
                 System.out.println("orden");
                 System.out.println(ordenesExistentes);
@@ -68,11 +67,13 @@ public class ExpertoProponerOrdenCompra {
                 }
 
                 // int cantidad = ap.getArticulo().getPuntoPedido() - ap.getArticulo().getStock();
+                // getCantidadTiempoFijo: con este metodo obtenemos la cantidad a pedir
                 int cantidad = ap.getCantidadTiempoFijo(repositorioOCDetalle);
                 if (cantidad <= 0) {
                     System.out.println("El producto tiene existencias suficientes" + ap.getArticulo().getNombre());
                     continue;
                 }
+                float subtotal = 0;
                 subtotal = cantidad * ap.getCostoUnitario() + ap.getCostoPedido();
 
                 OrdenCompraDetalle OCDetalle = OrdenCompraDetalle.builder()
@@ -81,7 +82,7 @@ public class ExpertoProponerOrdenCompra {
                         .subTotal(subtotal)
                         .build();
                 ordenCompra.addOrdenCompraDetalle(OCDetalle);
-
+                ap.getArticulo().calcularProximaRevision();
             }
             if (!ordenCompra.getOrdenCompraDetalles().isEmpty()) {
                 repositorioOC.save(ordenCompra);
