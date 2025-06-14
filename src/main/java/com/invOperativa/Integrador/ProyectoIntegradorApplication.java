@@ -114,7 +114,7 @@ public class ProyectoIntegradorApplication {
 					.inventarioMaxArticulo(250)
 					.precioUnitario(750.30F)
 					.proximaRevision(null)
-					.puntoPedido(600)
+					.puntoPedido(3000)
 					.stock(2000)
 					.tiempoFijo(7)
 					.build();
@@ -264,14 +264,20 @@ public class ProyectoIntegradorApplication {
 					.articuloProveedor(artProv4)
 					.build();
 
+			OrdenCompraDetalle ocd5 = OrdenCompraDetalle.builder()
+					.cantidad(100)
+					.articuloProveedor(artProv4)
+					.build();
+
 			OrdenCompra oc1 = OrdenCompra.builder()
 					.fhAltaOrdenCompra(new Date())
 					.build();
 
-			oc1.setEstadoOrdenCompra(estado1);
+			oc1.setEstadoOrdenCompra(estado3);
 			oc1.addOrdenCompraDetalle(ocd1);
 			oc1.addOrdenCompraDetalle(ocd2);
 			oc1.addOrdenCompraDetalle(ocd3);
+			oc1.addOrdenCompraDetalle(ocd5);
 
 			OrdenCompra oc2 = OrdenCompra.builder()
 					.fhAltaOrdenCompra(new Date())
@@ -283,7 +289,7 @@ public class ProyectoIntegradorApplication {
 			repositorioOrdenCompra.save(oc1);
 			repositorioOrdenCompra.save(oc2);
 
-		*/
+*/
 			
 		};
 	}

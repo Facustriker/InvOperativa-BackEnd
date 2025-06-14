@@ -61,7 +61,7 @@ public class ExpertoListarProductosFaltantes {
             //Si tiene articulosProveedor relacionados, me fijo cuál es el predeterminado
             ArticuloProveedor articuloProveedorPredeterminado = null;
 
-            for (ArticuloProveedor ap : articulosProveedor) {
+            for (ArticuloProveedor ap : articulosProveedor){ 
                 if (ap.isPredeterminado()) {
                     articuloProveedorPredeterminado = ap;
                 }
@@ -69,7 +69,7 @@ public class ExpertoListarProductosFaltantes {
             
             //Si no tiene articuloProveedor predeterminado, no se puede calcular el stockSeguridad
             if (articuloProveedorPredeterminado == null) {
-                System.out.println("Advertencia: El artículo " + art.getNombre() + " no tiene un proveedor predeterminado, por favor asignelo para poder calcular el stock de Seguridad");
+                System.out.println("Advertencia: El artículo " + art.getNombre() + " no tiene un proveedor predeterminado, por favor asignelo para poder obtener el stock de Seguridad");
                 continue;
             }
             

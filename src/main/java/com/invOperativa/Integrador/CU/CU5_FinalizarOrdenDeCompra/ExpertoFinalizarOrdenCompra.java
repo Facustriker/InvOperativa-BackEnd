@@ -66,7 +66,7 @@ public class ExpertoFinalizarOrdenCompra {
                     .nombreProveedor(detalle.getArticuloProveedor().getProveedor().getNombreProveedor())
                     .build();
 
-            dto.addDetalle(aux);
+            dto.getDetallesOC().add(aux);
         }
 
         return dto;
@@ -98,7 +98,9 @@ public class ExpertoFinalizarOrdenCompra {
 
         // Actualizar el inventario y verificar punto de pedido
         boolean requiereAtencion = false;
-        DTORespuestaFinalizarOC respuesta = DTORespuestaFinalizarOC.builder().build();
+        DTORespuestaFinalizarOC respuesta = DTORespuestaFinalizarOC.builder()
+            .requiereAtencion(false)
+            .build();
 
         for (OrdenCompraDetalle detalle : ordenCompra.get().getOrdenCompraDetalles()) {
             Articulo articulo = detalle.getArticuloProveedor().getArticulo();
@@ -113,11 +115,17 @@ public class ExpertoFinalizarOrdenCompra {
                 && articulo.getPuntoPedido() != null 
                 && nuevoStock <= articulo.getPuntoPedido()) {
                 requiereAtencion = true;
-                respuesta.addArticuloAtencion(
-                    articulo.getNombre(),
-                    nuevoStock,
-                    articulo.getPuntoPedido()
-                );
+                
+                DTODetalleAtencion detalleAtencion = DTODetalleAtencion.builder()
+                    .nombreArticulo(articulo.getNombre())
+                    .stockActual(nuevoStock)
+                    .puntoPedido(articulo.getPuntoPedido())
+                    .costoUnitario(detalle.getArticuloProveedor().getCostoUnitario())
+                    .costoPedido(detalle.getArticuloProveedor().getCostoPedido())
+                    .nombreProveedor(detalle.getArticuloProveedor().getProveedor().getNombreProveedor())
+                    .build();
+                
+                respuesta.getDetallesAtencion().add(detalleAtencion);
             }
         }
 
