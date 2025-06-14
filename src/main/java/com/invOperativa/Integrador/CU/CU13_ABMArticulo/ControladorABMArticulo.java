@@ -37,7 +37,7 @@ public class ControladorABMArticulo {
 
     // Lleva todos los articulos existentes
     @GetMapping("/getAll")
-    public ResponseEntity<?> getAll(@RequestBody boolean soloVigentes){
+    public ResponseEntity<?> getAll(@RequestParam boolean soloVigentes){
         List<Articulo> articulos = experto.traerTodos(soloVigentes);
         return ResponseEntity.ok(articulos);
     }
