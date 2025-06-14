@@ -30,91 +30,80 @@ public class ExpertoCalcularCGI {
             throw new CustomException("Error, el articulo no tiene un proveedor asignado");
         }
 
-        if ("Lote fijo".equals(artProveedorAuxiliar.get().getModeloInventario().getNombreModelo())) {
-            String nombreModelo = artProveedorAuxiliar.get().getModeloInventario().getNombreModelo();
-            String nombreArticulo = artProveedorAuxiliar.get().getArticulo().getNombre();
+        String nombreArticulo = artProveedorAuxiliar.get().getArticulo().getNombre();
 
-            DTOCalcularCGI dtoCalcularCGI = DTOCalcularCGI.builder()
-                    .nombreTipoModelo(nombreModelo)
-                    .nombreArticulo(nombreArticulo)
-                    .build();
+        DTOCalcularCGI dtoCalcularCGI = DTOCalcularCGI.builder()
+                .nombreArticulo(nombreArticulo)
+                .build();
 
             for(ArticuloProveedor articuloProveedor: artProveedores){
-                float CGI;
-                float costoUnitario = articuloProveedor.getCostoUnitario(); //C
-                int demanda = articuloProveedor.getArticulo().getDemanda(); //D
-                float costo = articuloProveedor.getCostoPedido(); //S
-                int loteOptimo = articuloProveedor.getLoteOptimo(); //Q
-                float costoAlmacenamiento = articuloProveedor.getArticulo().getCostoAlmacenamiento(); //H
+                if ("Lote fijo".equals(articuloProveedor.getModeloInventario().getNombreModelo())) {
 
-                float CC = costoUnitario * demanda; //Costo compra
-                float CP = (float) demanda /loteOptimo * costo; //Costo pedido
-                float CA = (float) loteOptimo /2 * costoAlmacenamiento; //Costo almacenamiento
+                    float CGI;
+                    float costoUnitario = articuloProveedor.getCostoUnitario(); //C
+                    int demanda = articuloProveedor.getArticulo().getDemanda(); //D
+                    float costo = articuloProveedor.getCostoPedido(); //S
+                    int loteOptimo = articuloProveedor.getLoteOptimo(); //Q
+                    float costoAlmacenamiento = articuloProveedor.getArticulo().getCostoAlmacenamiento(); //H
 
-                //Calculamos CGI
-                CGI = CC + CP + CA;
+                    float CC = costoUnitario * demanda; //Costo compra
+                    float CP = (float) demanda /loteOptimo * costo; //Costo pedido
+                    float CA = (float) loteOptimo /2 * costoAlmacenamiento; //Costo almacenamiento
 
-                DTODatosCGI aux = DTODatosCGI.builder()
-                        .nombreProveedor(articuloProveedor.getProveedor().getNombreProveedor())
-                        .CGI(CGI)
-                        .costoCompra(CC)
-                        .costoPedido(CP)
-                        .costoAlmacenamiento(CA)
-                        .isPredeterminado(articuloProveedor.isPredeterminado())
-                        .build();
+                    //Calculamos CGI
+                    CGI = CC + CP + CA;
 
-                dtoCalcularCGI.addDato(aux);
-            }
+                    DTODatosCGI aux = DTODatosCGI.builder()
+                            .nombreProveedor(articuloProveedor.getProveedor().getNombreProveedor())
+                            .nombreTipoModelo(articuloProveedor.getModeloInventario().getNombreModelo())
+                            .CGI(CGI)
+                            .costoCompra(CC)
+                            .costoPedido(CP)
+                            .costoAlmacenamiento(CA)
+                            .isPredeterminado(articuloProveedor.isPredeterminado())
+                            .build();
 
-            return dtoCalcularCGI;
+                    dtoCalcularCGI.addDato(aux);
+                }else{//El modelo es de tipo Tiempo fijo
 
-        }else{ //El modelo es de tipo Tiempo fijo
-            String nombreModelo = artProveedorAuxiliar.get().getModeloInventario().getNombreModelo();
-            String nombreArticulo = artProveedorAuxiliar.get().getArticulo().getNombre();
+                    float CGI;
+                    float costoUnitario = articuloProveedor.getCostoUnitario(); //C
+                    int demanda = articuloProveedor.getArticulo().getDemanda(); //D
+                    float costo = articuloProveedor.getCostoPedido(); //S
+                    float costoAlmacenamiento = articuloProveedor.getArticulo().getCostoAlmacenamiento(); //H
+                    int tiempoFijo = articuloProveedor.getArticulo().getTiempoFijo(); //T
+                    int demoraProveedor = articuloProveedor.getDemoraEntrega(); //L
+                    int stockArticulo = articuloProveedor.getArticulo().getStock(); //I
+                    float z = (float) getZ(articuloProveedor.getNivelServicio()); // z
+                    float d = (float) demanda /365; // d
+                    float stockSeguridad = articuloProveedor.getStockSeguridad();
+                    float sigmaTL = getSigma(d,tiempoFijo,demoraProveedor);
 
-            DTOCalcularCGI dtoCalcularCGI = DTOCalcularCGI.builder()
-                    .nombreTipoModelo(nombreModelo)
-                    .nombreArticulo(nombreArticulo)
-                    .build();
+                    float q = (d)*(tiempoFijo+demoraProveedor)+(z*sigmaTL)-(stockArticulo);
 
-            for(ArticuloProveedor articuloProveedor: artProveedores){
-                float CGI;
-                float costoUnitario = articuloProveedor.getCostoUnitario(); //C
-                int demanda = articuloProveedor.getArticulo().getDemanda(); //D
-                float costo = articuloProveedor.getCostoPedido(); //S
-                float costoAlmacenamiento = articuloProveedor.getArticulo().getCostoAlmacenamiento(); //H
-                int tiempoFijo = articuloProveedor.getArticulo().getTiempoFijo(); //T
-                int demoraProveedor = articuloProveedor.getDemoraEntrega(); //L
-                int stockArticulo = articuloProveedor.getArticulo().getStock(); //I
-                float z = (float) getZ(articuloProveedor.getNivelServicio()); // z
-                float d = (float) demanda /365; // d
-                float stockSeguridad = articuloProveedor.getStockSeguridad();
-                float sigmaTL = getSigma(d,tiempoFijo,demoraProveedor);
+                    float CC = costoUnitario * demanda; //Costo compra
+                    float CP = demanda/q * costo; //Costo pedido
+                    float CA = q/2 + stockSeguridad * costoAlmacenamiento; //Costo almacenamiento
 
-                float q = (d)*(tiempoFijo+demoraProveedor)+(z*sigmaTL)-(stockArticulo);
+                    //Calculamos CGI
+                    CGI = CC + CP + CA;
 
-                float CC = costoUnitario * demanda; //Costo compra
-                float CP = demanda/q * costo; //Costo pedido
-                float CA = q/2 + stockSeguridad * costoAlmacenamiento; //Costo almacenamiento
+                    DTODatosCGI aux = DTODatosCGI.builder()
+                            .nombreProveedor(articuloProveedor.getProveedor().getNombreProveedor())
+                            .nombreTipoModelo(articuloProveedor.getModeloInventario().getNombreModelo())
+                            .CGI(CGI)
+                            .costoCompra(CC)
+                            .costoPedido(CP)
+                            .costoAlmacenamiento(CA)
+                            .isPredeterminado(articuloProveedor.isPredeterminado())
+                            .build();
 
-                //Calculamos CGI
-                CGI = CC + CP + CA;
-
-                DTODatosCGI aux = DTODatosCGI.builder()
-                        .nombreProveedor(articuloProveedor.getProveedor().getNombreProveedor())
-                        .CGI(CGI)
-                        .costoCompra(CC)
-                        .costoPedido(CP)
-                        .costoAlmacenamiento(CA)
-                        .isPredeterminado(articuloProveedor.isPredeterminado())
-                        .build();
-
-                dtoCalcularCGI.addDato(aux);
+                    dtoCalcularCGI.addDato(aux);
+                }
 
             }
 
             return dtoCalcularCGI;
-        }
     }
 
     public static double getZ(double nivelServicio) {

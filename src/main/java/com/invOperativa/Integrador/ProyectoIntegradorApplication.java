@@ -162,7 +162,7 @@ public class ProyectoIntegradorApplication {
 					.stockSeguridad(50)
 					.proveedor(pr2)
 					.articulo(art1)
-					.modeloInventario(modeloLoteFijo)
+					.modeloInventario(modeloTiempoFijo)
 					.build();
 
 			ArticuloProveedor artProv3 = ArticuloProveedor.builder()
@@ -188,9 +188,9 @@ public class ProyectoIntegradorApplication {
 					.loteOptimo(45)
 					.nivelServicio(0.88F)
 					.stockSeguridad(10)
-					.proveedor(pr2)
+					.proveedor(pr3)
 					.articulo(art3)
-					.modeloInventario(modeloLoteFijo)
+					.modeloInventario(modeloTiempoFijo)
 					.build();
 
 			ArticuloProveedor artProv5 = ArticuloProveedor.builder()
@@ -204,7 +204,7 @@ public class ProyectoIntegradorApplication {
 					.stockSeguridad(300)
 					.proveedor(pr3)
 					.articulo(art4)
-					.modeloInventario(modeloTiempoFijo)
+					.modeloInventario(modeloLoteFijo)
 					.build();
 
 			ArticuloProveedor artProv6 = ArticuloProveedor.builder()
@@ -216,7 +216,7 @@ public class ProyectoIntegradorApplication {
 					.loteOptimo(999)
 					.nivelServicio(0.99F)
 					.stockSeguridad(400)
-					.proveedor(pr4)
+					.proveedor(pr1)
 					.articulo(art4)
 					.modeloInventario(modeloTiempoFijo)
 					.build();
@@ -283,7 +283,7 @@ public class ProyectoIntegradorApplication {
 			repositorioOrdenCompra.save(oc1);
 			repositorioOrdenCompra.save(oc2);
 
-*/
+		*/
 			
 		};
 	}
