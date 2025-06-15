@@ -20,8 +20,8 @@ public class ControladorAjustarInventario {
     }
 
     @PostMapping("/confirmar")
-    public ResponseEntity<?> confirmar(@RequestParam Long idArticulo, @RequestParam int stock) {
-        boolean ret = experto.confirmar(idArticulo,stock);
+    public ResponseEntity<?> confirmar(@RequestParam Long idArticulo, @RequestParam int stock, @RequestParam boolean forzarConfirmacion) {
+        boolean ret = experto.confirmar(idArticulo,stock, forzarConfirmacion);
         return ResponseEntity.ok(ret);
     }
 }
