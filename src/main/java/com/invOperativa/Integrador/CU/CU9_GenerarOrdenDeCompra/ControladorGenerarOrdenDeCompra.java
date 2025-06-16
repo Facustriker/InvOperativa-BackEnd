@@ -27,5 +27,4 @@ public class ControladorGenerarOrdenDeCompra {
         List<String> yaPedidos = experto.nuevaOrden(dto);
         return ResponseEntity.ok(yaPedidos);
     }
-
 }
