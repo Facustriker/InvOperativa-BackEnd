@@ -5,17 +5,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class DTOSugerirOrdenDetalle {
 
-    private int cantidad;
-    private float subTotal;
-    private Long articuloProveedorId;
-    private String articuloNombre;
-    private Long articuloId;
-    private float articuloPrecio;
+    private int cantidadPredeterminada;
+    private List<DTOProveedor> proveedores;
 
 }

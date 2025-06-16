@@ -5,15 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DTONuevaOrden {
-
-    private List<DTODetalleOrden> detalles;
-    private boolean confirmacion;
-
+public class DTODetalleOrdenCompra {
+    private String nombreProducto;
+    private int cantidad;
+    private float costo;
+    private float subTotal;
 }

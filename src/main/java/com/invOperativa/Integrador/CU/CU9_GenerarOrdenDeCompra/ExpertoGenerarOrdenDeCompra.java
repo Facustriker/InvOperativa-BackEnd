@@ -26,7 +26,7 @@ public class ExpertoGenerarOrdenDeCompra {
     }
 
     @Transactional
-    public List<String> nuevaOrden(DTONuevaOrden dto){
+    public DTOSalidaOrdenDeCompra nuevaOrden(DTONuevaOrden dto) {
 
         List<DTODetalleOrden> detalles = dto.getDetalles();
 
@@ -34,7 +34,7 @@ public class ExpertoGenerarOrdenDeCompra {
             throw new CustomException("La orden no contiene detalles");
         }
 
-        // Extraer los IDs de artículos involucrados
+        // 1. Verificar pendientes
         List<Long> articuloIds = detalles.stream()
                 .map(DTODetalleOrden::getArticuloProveedorId)
                 .map(id -> repositorioArticuloProveedor.findByIdAndFechaBajaIsNull(id)
@@ -42,84 +42,106 @@ public class ExpertoGenerarOrdenDeCompra {
                 .map(ap -> ap.getArticulo().getId())
                 .toList();
 
-        // Verificar si ya están pedidos
         List<Long> pendientesIds = buscarPendientes(articuloIds);
 
         if (!pendientesIds.isEmpty() && !dto.isConfirmacion()) {
-            // Devuelvo los nombres de los artículos ya pedidos
             List<String> nombres = pendientesIds.stream()
                     .map(id -> repositorioArticulo.findById(id)
                             .map(Articulo::getNombre)
                             .orElse("Artículo desconocido (ID: " + id + ")"))
                     .toList();
-            return nombres; // En este caso se interrumpe y el frontend decidirá
+            return DTOSalidaOrdenDeCompra.builder()
+                    .nombresPedidos(nombres)
+                    .build();
         }
 
-        Long articuloProveedorId = detalles.get(0).getArticuloProveedorId();
+        // 2. Agrupar detalles por proveedor
+        Map<Proveedor, List<DTODetalleOrden>> detallesPorProveedor = new HashMap<>();
 
-        ArticuloProveedor articuloProveedorAux = repositorioArticuloProveedor.findByIdAndFechaBajaIsNull(articuloProveedorId).orElseThrow(()-> new CustomException("No existe un articulo proveedor activo con ese id"));
+        for (DTODetalleOrden dtoDet : detalles) {
 
-        Proveedor proveedor = articuloProveedorAux.getProveedor();
+            ArticuloProveedor ap = repositorioArticuloProveedor
+                    .findByIdAndFechaBajaIsNull(dtoDet.getArticuloProveedorId())
+                    .orElseThrow(() -> new CustomException(
+                            "No existe un artículo-proveedor activo con id " + dtoDet.getArticuloProveedorId()));
 
-        Long proveedorId = proveedor.getId();
+            Proveedor prov = ap.getProveedor();
 
-        float totalAuxiliar = 0;
-
-        List<OrdenCompraDetalle> ordenCompraDetalles = new ArrayList<>();
-
-        for (DTODetalleOrden detalle : detalles){
-
-            ArticuloProveedor articuloProveedor = repositorioArticuloProveedor.findById(detalle.getArticuloProveedorId()).orElseThrow(()-> new CustomException("No existe uno de los artículo-proveedor que busca"));
-
-            Long proveedorId1 = articuloProveedor.getProveedor().getId();
-
-            if (!proveedorId1.equals(proveedorId)){
-                throw new CustomException("Uno de los artículos es de un proveedor distinto");
+            if (prov == null) {
+                throw new CustomException("El artículo-proveedor " + ap.getId() + " no tiene proveedor asociado");
             }
 
-            if (detalle.getCantidad() <= 0) {
-                throw new CustomException("La cantidad a pedir debe ser mayor a 0");
-            }
+            detallesPorProveedor
+                    .computeIfAbsent(prov, k -> new ArrayList<>())
+                    .add(dtoDet);
+        }
 
-            float subTotal = detalle.getCantidad() * articuloProveedor.getArticulo().getPrecioUnitario();
+        // 3. Para cada proveedor, crear y guardar una orden
+        List<Long> ordenesCreadas = new ArrayList<>();
+        EstadoOrdenCompra estadoPendiente = buscarEstadoPendiente();
+        Date ahora = new Date();
 
-            if (Math.abs(subTotal - detalle.getSubTotal()) > 0.01f){
-                throw new CustomException("Uno de los subtotales está mal calculado");
-            }
+        DTOSalidaOrdenDeCompra dtoSalidaOrdenDeCompra = DTOSalidaOrdenDeCompra.builder().nombresPedidos(new ArrayList<>()).build();
 
-            totalAuxiliar += detalle.getSubTotal();
+        for (Map.Entry<Proveedor, List<DTODetalleOrden>> entry : detallesPorProveedor.entrySet()) {
 
-            OrdenCompraDetalle ordenCompraDetalle = OrdenCompraDetalle.builder()
-                    .articuloProveedor(articuloProveedor)
-                    .cantidad(detalle.getCantidad())
-                    .subTotal(detalle.getSubTotal())
+            Proveedor proveedor = entry.getKey();
+
+            List<DTODetalleOrden> dtos = entry.getValue();
+
+            // Construcción de la orden
+            OrdenCompra oc = OrdenCompra.builder()
+                    .estadoOrdenCompra(estadoPendiente)
+                    .fhAltaOrdenCompra(ahora)
+                    .isAuto(false)                // marcamos que es manual
+                    .proveedor(proveedor)
                     .build();
 
-            ordenCompraDetalles.add(ordenCompraDetalle);
+            float total = 0;
 
-            repositorioOrdenCompraDetalle.save(ordenCompraDetalle);
+            List<DTODetalleOrdenCompra> dtoDetalles = new ArrayList<>();
 
+            // Detalles de la orden
+            for (DTODetalleOrden dtoDet : dtos) {
+                ArticuloProveedor ap = repositorioArticuloProveedor
+                        .findByIdAndFechaBajaIsNull(dtoDet.getArticuloProveedorId())
+                        .get();  // ya existía porque agrupamos antes
+
+                OrdenCompraDetalle det = new OrdenCompraDetalle();
+                det.setCantidad(dtoDet.getCantidad());
+                det.setSubTotal(dtoDet.getSubTotal());
+                det.setArticuloProveedor(ap);
+                oc.addOrdenCompraDetalle(det);
+
+                total += dtoDet.getSubTotal();
+
+                DTODetalleOrdenCompra dtoDetalleOrdenCompra =  DTODetalleOrdenCompra.builder()
+                        .nombreProducto(ap.getArticulo().getNombre())
+                        .cantidad(dtoDet.getCantidad())
+                        .costo(ap.getCostoUnitario())
+                        .subTotal(dtoDet.getSubTotal())
+                        .build();
+
+                dtoDetalles.add(dtoDetalleOrdenCompra);
+            }
+
+            oc.setTotal(total);
+
+            // Persistir
+            OrdenCompra guardada = repositorioOrdenCompra.save(oc);
+
+            DTOOrdenCompra dtoOrdenCompra = DTOOrdenCompra.builder()
+                    .total(total)
+                    .proveedorNombre(proveedor.getNombreProveedor())
+                    .detalles(dtoDetalles)
+                    .build();
+
+            dtoSalidaOrdenDeCompra.getOrdenesDeCompra().add(dtoOrdenCompra);
         }
 
-        if (Math.abs(totalAuxiliar - dto.getTotal()) > 0.01f){
-            throw new CustomException("El total está mal calculado");
-        }
-
-        OrdenCompra ordenCompra = OrdenCompra.builder()
-                .proveedor(proveedor)
-                .estadoOrdenCompra(buscarEstadoPendiente())
-                .fhBajaOrdenCompra(null)
-                .ordenCompraDetalles(ordenCompraDetalles)
-                .fhAltaOrdenCompra(new Date())
-                .isAuto(false)
-                .total(dto.getTotal())
-                .build();
-
-        repositorioOrdenCompra.save(ordenCompra);
-
-        return new ArrayList<>(); // Lista vacía, estamos bien
-
-   }
+        // 4. Devolver IDs de las órdenes generadas
+        return dtoSalidaOrdenDeCompra;
+    }
 
     @Transactional
     public void generacionAutomatica(List<Long> articuloIds) {
@@ -221,49 +243,52 @@ public class ExpertoGenerarOrdenDeCompra {
                 .orElseThrow(() -> new CustomException("No existe estado 'Pendiente' en EstadoOrdenCompra"));
     }
 
-    public DTOSugerirOrden sugerirOrden(List<Long> ids){
+    public DTOSugerirOrdenDetalle sugerirOrden(Long idArticulo){
 
-        List<DTOSugerirOrdenDetalle> sugerencias = new ArrayList<>();
+        ArticuloProveedor articuloProveedorPredeterminado = repositorioArticuloProveedor.findByArticuloIdAndIsPredeterminadoTrueAndFechaBajaIsNull(idArticulo).orElseThrow(()-> new CustomException("No existe el articulo proveedor con id " + idArticulo));
 
-        if (ids.isEmpty()){
-            throw new CustomException("No se puede recibir un arreglo vacío de IDs");
-        }
+        Articulo articulo = articuloProveedorPredeterminado.getArticulo();
 
-        float total = 0;
+        List<ArticuloProveedor> articuloProveedors = repositorioArticuloProveedor.findActivosByArticuloId(idArticulo);
 
-        for (Long id : ids){
+        DTOSugerirOrdenDetalle dtoSugerirOrdenDetalle = DTOSugerirOrdenDetalle.builder().build();
 
-            ArticuloProveedor articuloProveedor = repositorioArticuloProveedor.findByArticuloIdAndIsPredeterminadoTrueAndFechaBajaIsNull(id).orElseThrow(()-> new CustomException("No existe el articulo proveedor con id " + id));
+        List<DTOProveedor> dtoProveedors = new ArrayList<>();
 
-            Articulo articulo = articuloProveedor.getArticulo();
+        for (ArticuloProveedor articuloProveedor : articuloProveedors){
+            Proveedor proveedor = articuloProveedor.getProveedor();
 
-            DTOSugerirOrdenDetalle dtoSugerirOrdenDetalle = DTOSugerirOrdenDetalle.builder()
-                    .articuloId(articulo.getId())
-                    .articuloNombre(articulo.getNombre())
-                    .articuloPrecio(articulo.getPrecioUnitario())
-                    .articuloProveedorId(articuloProveedor.getId())
+            DTOProveedor dtoProveedor = DTOProveedor.builder()
+                    .proveedorId(proveedor.getId())
+                    .nombreProvedor(proveedor.getNombreProveedor())
+                    .isPredeterminado(articuloProveedor.isPredeterminado())
+                    .costoUnitario(articuloProveedor.getCostoUnitario())
                     .build();
 
-            if (articulo.getPuntoPedido()!=null){
-                dtoSugerirOrdenDetalle.setCantidad(articuloProveedor.getLoteOptimo());
-                dtoSugerirOrdenDetalle.setSubTotal(articuloProveedor.getLoteOptimo() * articuloProveedor.getCostoUnitario());
-            } else {
-                int cantidad = articuloProveedor.getCantidadTiempoFijo(repositorioOrdenCompraDetalle);
-                dtoSugerirOrdenDetalle.setCantidad(cantidad);
-                dtoSugerirOrdenDetalle.setSubTotal(cantidad * articuloProveedor.getCostoUnitario());
-            }
-
-            total += dtoSugerirOrdenDetalle.getSubTotal();
-
-            sugerencias.add(dtoSugerirOrdenDetalle);
-
+            dtoProveedors.add(dtoProveedor);
         }
 
-        return DTOSugerirOrden.builder()
-                .detalles(sugerencias)
-                .total(total)
-                .build();
+        dtoSugerirOrdenDetalle.setProveedores(dtoProveedors);
 
+        if (articulo.getPuntoPedido()!=null){
+            dtoSugerirOrdenDetalle.setCantidadPredeterminada(articuloProveedorPredeterminado.getLoteOptimo());
+        } else {
+            int cantidad = articuloProveedorPredeterminado.getCantidadTiempoFijo(repositorioOrdenCompraDetalle);
+            dtoSugerirOrdenDetalle.setCantidadPredeterminada(cantidad);
+        }
+
+        return dtoSugerirOrdenDetalle;
+
+    }
+
+    // Trae los articulos vigentes
+    public List<Articulo> traerTodos() {
+        return repositorioArticulo.findByfhBajaArticuloIsNull();
+    }
+
+    // Trae las ordenes de compra vigentes
+    public List<OrdenCompra> traerOrdenes() {
+        return repositorioOrdenCompra.obtenerOrdenesVigentes();
     }
 
 }

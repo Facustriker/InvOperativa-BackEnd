@@ -11,9 +11,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DTONuevaOrden {
-
-    private List<DTODetalleOrden> detalles;
-    private boolean confirmacion;
-
+public class DTOSalidaOrdenDeCompra {
+    private List<DTOOrdenCompra> ordenesDeCompra;
+    private List<String> nombresPedidos;
 }

@@ -4,15 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.util.List;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DTOSugerirOrden {
-
-    private List<DTOSugerirOrdenDetalle> detalles;
-    private float total;
-
+public class DTOProveedor {
+    private Long proveedorId;
+    private String nombreProvedor;
+    private boolean isPredeterminado;
+    private float costoUnitario;
 }
