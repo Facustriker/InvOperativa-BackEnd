@@ -58,4 +58,9 @@ public interface RepositorioOrdenCompra extends BaseRepository<OrdenCompra, Long
     );
 
 
+    @Query("SELECT o " +
+            "FROM OrdenCompra o " +
+            "WHERE (fhBajaOrdenCompra IS NULL OR fhBajaOrdenCompra > CURRENT_TIMESTAMP)")
+    List<OrdenCompra> obtenerOrdenesVigentes();
+
 }
