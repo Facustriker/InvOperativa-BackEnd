@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
 import java.util.List;
 
 @RestController
@@ -37,7 +38,7 @@ public class ControladorGenerarOrdenDeCompra {
 
     @GetMapping("/traerOrdenesVigentes")
     public ResponseEntity<?> traerOrdenes(){
-        List<OrdenCompra> ordenes = experto.traerOrdenes();
+        Collection<DTOVisualizarOC> ordenes = experto.traerOrdenes();
         return ResponseEntity.ok(ordenes);
     }
 }

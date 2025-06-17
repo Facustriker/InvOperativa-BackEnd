@@ -46,7 +46,7 @@ public class ProyectoIntegradorApplication {
 	public CommandLineRunner init() {
 		return args -> {
 
-			/*
+
 
 			ModeloInventario modeloLoteFijo = ModeloInventario.builder()
 					.nombreModelo("Lote Fijo")
@@ -71,14 +71,9 @@ public class ProyectoIntegradorApplication {
 					.nombreProveedor("Pablo")
 					.build();
 
-			Proveedor pr4 = Proveedor.builder()
-					.nombreProveedor("Gerardo")
-					.build();
-
 			pr1 = repositorioProveedor.save(pr1);
 			pr2 = repositorioProveedor.save(pr2);
 			pr3 = repositorioProveedor.save(pr3);
-			pr4 = repositorioProveedor.save(pr4);
 
 			Articulo art1 = Articulo.builder()
 					.nombre("Shampoo Plusbelle")
@@ -245,35 +240,41 @@ public class ProyectoIntegradorApplication {
 			estado3 = repositorioEstadoOrdenCompra.save(estado3);
 
 			OrdenCompraDetalle ocd1 = OrdenCompraDetalle.builder()
-					.cantidad(50)
+					.cantidad(5000)
+					.subTotal(7350)
 					.articuloProveedor(artProv2)
 					.build();
 
 			OrdenCompraDetalle ocd2 = OrdenCompraDetalle.builder()
-					.cantidad(30)
+					.cantidad(3000)
+					.subTotal(4345)
 					.articuloProveedor(artProv1)
 					.build();
 
 			OrdenCompraDetalle ocd3 = OrdenCompraDetalle.builder()
-					.cantidad(80)
+					.cantidad(8000)
+					.subTotal(7456)
 					.articuloProveedor(artProv3)
 					.build();
 
 			OrdenCompraDetalle ocd4 = OrdenCompraDetalle.builder()
-					.cantidad(120)
+					.cantidad(14000)
+					.subTotal(8954)
 					.articuloProveedor(artProv4)
 					.build();
 
 			OrdenCompraDetalle ocd5 = OrdenCompraDetalle.builder()
-					.cantidad(100)
+					.cantidad(10000)
+					.subTotal(9812)
 					.articuloProveedor(artProv4)
 					.build();
 
 			OrdenCompra oc1 = OrdenCompra.builder()
 					.fhAltaOrdenCompra(new Date())
+					.total(50000)
 					.build();
 
-			oc1.setEstadoOrdenCompra(estado3);
+			oc1.setEstadoOrdenCompra(estado1);
 			oc1.addOrdenCompraDetalle(ocd1);
 			oc1.addOrdenCompraDetalle(ocd2);
 			oc1.addOrdenCompraDetalle(ocd3);
@@ -281,6 +282,7 @@ public class ProyectoIntegradorApplication {
 
 			OrdenCompra oc2 = OrdenCompra.builder()
 					.fhAltaOrdenCompra(new Date())
+					.total(35000)
 					.build();
 
 			oc2.setEstadoOrdenCompra(estado2);
@@ -289,7 +291,8 @@ public class ProyectoIntegradorApplication {
 			repositorioOrdenCompra.save(oc1);
 			repositorioOrdenCompra.save(oc2);
 
-		*/
+
+
 			
 		};
 	}
