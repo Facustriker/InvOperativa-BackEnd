@@ -32,8 +32,7 @@ public class ExpertoListarProveedoresXArticulo {
             throw new CustomException("articulo ingresado no existe");
         }
 
-        Long placeholder_id = 1L;
-        Collection<ArticuloProveedor> articulosProveedor = repositorioArticuloProveedor.findActivosByArticuloId(placeholder_id);
+        Collection<ArticuloProveedor> articulosProveedor = repositorioArticuloProveedor.findActivosByArticuloId(articulo.get().getId());
 
         Collection<DTOProveedor> dtosProv = new ArrayList<>();
 
