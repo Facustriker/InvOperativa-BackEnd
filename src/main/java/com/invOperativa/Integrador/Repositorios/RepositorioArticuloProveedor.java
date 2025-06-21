@@ -14,6 +14,12 @@ public interface RepositorioArticuloProveedor extends BaseRepository<ArticuloPro
             "WHERE ap.proveedor.id = :idProveedor")
     Collection<ArticuloProveedor> getArticulosProveedorPorIdProveedor(@Param("idProveedor") Long idProveedor);
 
+    @Query("SELECT ap " +
+            "FROM ArticuloProveedor ap " +
+            "WHERE ap.proveedor.id = :idProveedor " +
+            "AND (fechaBaja IS NULL OR fechaBaja > CURRENT_TIMESTAMP)")
+    Collection<ArticuloProveedor> getArticulosProveedorVigentesPorIdProveedor(@Param("idProveedor") Long idProveedor);
+
     @Query("SELECT ap FROM ArticuloProveedor ap " +
             "WHERE ap.articulo.id = :idArticulo " +
             "AND ap.fechaBaja IS NULL " +

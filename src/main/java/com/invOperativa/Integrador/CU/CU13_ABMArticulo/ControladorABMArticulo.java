@@ -28,6 +28,12 @@ public class ControladorABMArticulo {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/getArticulo")
+    public ResponseEntity<?> getArticulo(@RequestParam Long id){
+        Articulo art = experto.getArticulo(id);
+        return ResponseEntity.ok(art);
+    }
+
     // Baja lógica de un artículo
     @PutMapping("/baja/{id}")
     public ResponseEntity<?> baja(@PathVariable Long id){

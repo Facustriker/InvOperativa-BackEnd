@@ -21,8 +21,4 @@ public class DTOFinalizarOrdenCompra {
 
     @Builder.Default
     Collection<DTODetallesOC> detallesOC = new ArrayList<>();
-
-    public void addDetalle(DTODetallesOC dtoDetalle){
-        detallesOC.add(dtoDetalle);
-    }
 }

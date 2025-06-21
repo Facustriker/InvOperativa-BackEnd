@@ -14,8 +14,6 @@ import java.util.Collection;
 @NoArgsConstructor
 public class DTOCalcularCGI {
 
-    private String nombreTipoModelo;
-
     private String nombreArticulo;
 
     @Builder.Default
