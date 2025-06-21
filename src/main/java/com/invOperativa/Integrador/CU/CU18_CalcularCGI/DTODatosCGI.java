@@ -13,6 +13,8 @@ public class DTODatosCGI {
 
     private String nombreProveedor;
 
+    private String nombreTipoModelo;
+
     private float CGI;
 
     private float costoCompra;

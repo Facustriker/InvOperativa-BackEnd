@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DTODetallesOC {
 
+    private Long idOCDetalle;
+
     private int cantidad;
 
     private float subTotal;
@@ -19,12 +21,14 @@ public class DTODetallesOC {
 
     private float costoPedido;
 
-    private boolean isProveedorPredeterminado;
-
     private String nombreArt;
 
     private float costoAlmacenamientoArt;
 
     private String nombreProveedor;
+
+    private boolean isPredeterminado;
+
+    private int puntoPedido;
 
 }

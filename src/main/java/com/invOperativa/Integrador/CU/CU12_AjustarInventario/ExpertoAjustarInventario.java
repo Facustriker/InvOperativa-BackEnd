@@ -29,16 +29,31 @@ public class ExpertoAjustarInventario {
                 .build();
     }
 
-    public boolean confirmar(Long idArticulo, int stock){
-        Optional<Articulo> articulo = repositorioArticulo.getArticuloVigentePorId(idArticulo);
+    public boolean confirmar(Long idArticulo, int stock, boolean forzarConfirmacion) {
+        Optional<Articulo> articuloOpt = repositorioArticulo.getArticuloVigentePorId(idArticulo);
 
-        if(articulo.isEmpty()){
-            throw new CustomException("Error, el articulo no se encontro");
+        if (articuloOpt.isEmpty()) {
+            throw new CustomException("Error, el articulo no se encontró");
         }
 
-        int puntoPedido = articulo.get().getPuntoPedido();
+        Articulo articulo = articuloOpt.get();
+        int puntoPedido = articulo.getPuntoPedido();
 
-        //Si hay que mandar la notificación de la orden de compra el booleano es True, si está todo ok, es False
+        if (stock < puntoPedido && !forzarConfirmacion) {
+            // Mostrar advertencia sin guardar
+            return true;
+        }
+
+        if(stock > articulo.getInventarioMaxArticulo()){
+            throw new CustomException("Error, el stock ingresado es mayor que el tamaño maximo de inventario para este articulo");
+        }
+
+        // Guardar el nuevo stock
+        articulo.setStock(stock);
+        repositorioArticulo.save(articulo);
+
+        // Si stock es menor al punto pedido, pero fue forzado, igualmente devolvemos true (para cartel amarillo)
         return stock < puntoPedido;
     }
+
 }

@@ -30,7 +30,7 @@ public class ExpertoListarProductosAReponer {
     //Obtener los InventarioArticulos de un Inventario con stock <= puntoPedido
     public Collection<DTOArticulo> getArticulosAReponer() {
 
-        Collection<Articulo> articulos = repositorioArticulo.findAll();
+        Collection<Articulo> articulos = repositorioArticulo.findByfhBajaArticuloIsNull();
         if (articulos.isEmpty()) {
             throw new CustomException("Error, no existen articulos en el inventario");
         }

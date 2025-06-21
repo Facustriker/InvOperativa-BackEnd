@@ -47,6 +47,7 @@ public class ProyectoIntegradorApplication {
 		return args -> {
 
 			/*
+
 			ModeloInventario modeloLoteFijo = ModeloInventario.builder()
 					.nombreModelo("Lote Fijo")
 					.build();
@@ -70,26 +71,16 @@ public class ProyectoIntegradorApplication {
 					.nombreProveedor("Pablo")
 					.build();
 
-			Proveedor pr4 = Proveedor.builder()
-					.nombreProveedor("Gerardo")
-					.build();
-
-			Proveedor pr5 = Proveedor.builder()
-					.nombreProveedor("Carlos")
-					.build();
-
 			pr1 = repositorioProveedor.save(pr1);
 			pr2 = repositorioProveedor.save(pr2);
 			pr3 = repositorioProveedor.save(pr3);
-			pr4 = repositorioProveedor.save(pr4);
-			pr5 = repositorioProveedor.save(pr5);
 
 			Articulo art1 = Articulo.builder()
 					.nombre("Shampoo Plusbelle")
 					.costoAlmacenamiento(30F)
 					.demanda(400)
 					.descripcionArt("Shampoo de calidad")
-					.inventarioMaxArticulo(450)
+					.inventarioMaxArticulo(12450)
 					.precioUnitario(1250.30F)
 					.proximaRevision(null)
 					.puntoPedido(987)
@@ -102,7 +93,7 @@ public class ProyectoIntegradorApplication {
 					.costoAlmacenamiento(22F)
 					.demanda(555)
 					.descripcionArt("Shampoo de calidad mejor")
-					.inventarioMaxArticulo(950)
+					.inventarioMaxArticulo(12950)
 					.precioUnitario(2250.30F)
 					.proximaRevision(null)
 					.puntoPedido(900)
@@ -115,10 +106,10 @@ public class ProyectoIntegradorApplication {
 					.costoAlmacenamiento(10F)
 					.demanda(100)
 					.descripcionArt("Shampoo de incalidad")
-					.inventarioMaxArticulo(250)
+					.inventarioMaxArticulo(5550)
 					.precioUnitario(750.30F)
 					.proximaRevision(null)
-					.puntoPedido(600)
+					.puntoPedido(3000)
 					.stock(2000)
 					.tiempoFijo(7)
 					.build();
@@ -128,7 +119,7 @@ public class ProyectoIntegradorApplication {
 					.costoAlmacenamiento(300F)
 					.demanda(2000)
 					.descripcionArt("Consola berreta")
-					.inventarioMaxArticulo(2250)
+					.inventarioMaxArticulo(6250)
 					.precioUnitario(10250.30F)
 					.proximaRevision(null)
 					.puntoPedido(2000)
@@ -136,80 +127,10 @@ public class ProyectoIntegradorApplication {
 					.tiempoFijo(2)
 					.build();
 
-			Articulo art5 = Articulo.builder()
-					.nombre("PC Gamer")
-					.costoAlmacenamiento(300F)
-					.demanda(7300)
-					.descripcionArt("Consola berreta")
-					.inventarioMaxArticulo(2250)
-					.precioUnitario(10250.30F)
-					.proximaRevision(new Date())
-					.puntoPedido(null)
-					.stock(200)
-					.tiempoFijo(7)
-					.build();
-
-			Articulo art6 = Articulo.builder()
-					.nombre("Tasa Cafe")
-					.costoAlmacenamiento(300F)
-					.demanda(8000)
-					.descripcionArt("Tasa")
-					.inventarioMaxArticulo(2250)
-					.precioUnitario(10250.30F)
-					.proximaRevision(new Date())
-					.puntoPedido(null)
-					.stock(200)
-					.tiempoFijo(14)
-					.build();
-
-			Articulo art7 = Articulo.builder()
-					.nombre("Tasa Cafe")
-					.costoAlmacenamiento(300F)
-					.demanda(8000)
-					.descripcionArt("Tasa")
-					.inventarioMaxArticulo(2250)
-					.precioUnitario(10250.30F)
-					.proximaRevision(new Date())
-					.puntoPedido(null)
-					.stock(200)
-					.tiempoFijo(14)
-					.build();
-
-			Articulo art8 = Articulo.builder()
-					.nombre("Tasa Cafe")
-					.costoAlmacenamiento(300F)
-					.demanda(8000)
-					.descripcionArt("Tasa")
-					.inventarioMaxArticulo(2250)
-					.precioUnitario(10250.30F)
-					.proximaRevision(new Date())
-					.puntoPedido(null)
-					.stock(200)
-					.tiempoFijo(14)
-					.build();
-
-			Articulo art9 = Articulo.builder()
-					.nombre("Tasa Cafe")
-					.costoAlmacenamiento(300F)
-					.demanda(8000)
-					.descripcionArt("Tasa")
-					.inventarioMaxArticulo(2250)
-					.precioUnitario(10250.30F)
-					.proximaRevision(new Date())
-					.puntoPedido(null)
-					.stock(200)
-					.tiempoFijo(14)
-					.build();
-
 			art1 = repositorioArticulo.save(art1);
 			art2 = repositorioArticulo.save(art2);
 			art3 = repositorioArticulo.save(art3);
 			art4 = repositorioArticulo.save(art4);
-			art5 = repositorioArticulo.save(art5);
-			art6 = repositorioArticulo.save(art6);
-			art7 = repositorioArticulo.save(art7);
-			art8 = repositorioArticulo.save(art8);
-			art9 = repositorioArticulo.save(art9);
 
 			ArticuloProveedor artProv1 = ArticuloProveedor.builder()
 					.costoPedido(500F)
@@ -236,7 +157,7 @@ public class ProyectoIntegradorApplication {
 					.stockSeguridad(50)
 					.proveedor(pr2)
 					.articulo(art1)
-					.modeloInventario(modeloLoteFijo)
+					.modeloInventario(modeloTiempoFijo)
 					.build();
 
 			ArticuloProveedor artProv3 = ArticuloProveedor.builder()
@@ -262,9 +183,9 @@ public class ProyectoIntegradorApplication {
 					.loteOptimo(45)
 					.nivelServicio(0.88F)
 					.stockSeguridad(10)
-					.proveedor(pr2)
+					.proveedor(pr3)
 					.articulo(art3)
-					.modeloInventario(modeloLoteFijo)
+					.modeloInventario(modeloTiempoFijo)
 					.build();
 
 			ArticuloProveedor artProv5 = ArticuloProveedor.builder()
@@ -278,7 +199,7 @@ public class ProyectoIntegradorApplication {
 					.stockSeguridad(300)
 					.proveedor(pr3)
 					.articulo(art4)
-					.modeloInventario(modeloTiempoFijo)
+					.modeloInventario(modeloLoteFijo)
 					.build();
 
 			ArticuloProveedor artProv6 = ArticuloProveedor.builder()
@@ -290,78 +211,8 @@ public class ProyectoIntegradorApplication {
 					.loteOptimo(999)
 					.nivelServicio(0.99F)
 					.stockSeguridad(400)
-					.proveedor(pr4)
-					.articulo(art4)
-					.modeloInventario(modeloTiempoFijo)
-					.build();
-
-			ArticuloProveedor artProv7 = ArticuloProveedor.builder()
-					.costoPedido(1200F)
-					.costoUnitario(4500F)
-					.demoraEntrega(7)
-					.fhAsignacion(new Date())
-					.isPredeterminado(true)
-					.loteOptimo(null)
-					.nivelServicio(0.99F)
-					.stockSeguridad(400)
-					.proveedor(pr4)
-					.articulo(art5)
-					.modeloInventario(modeloTiempoFijo)
-					.build();
-
-			ArticuloProveedor artProv8 = ArticuloProveedor.builder()
-					.costoPedido(1200F)
-					.costoUnitario(4500F)
-					.demoraEntrega(7)
-					.fhAsignacion(new Date())
-					.isPredeterminado(true)
-					.loteOptimo(null)
-					.nivelServicio(0.99F)
-					.stockSeguridad(400)
-					.proveedor(pr4)
-					.articulo(art6)
-					.modeloInventario(modeloTiempoFijo)
-					.build();
-
-			ArticuloProveedor artProv9 = ArticuloProveedor.builder()
-					.costoPedido(1200F)
-					.costoUnitario(4500F)
-					.demoraEntrega(7)
-					.fhAsignacion(new Date())
-					.isPredeterminado(true)
-					.loteOptimo(null)
-					.nivelServicio(0.99F)
-					.stockSeguridad(400)
-					.proveedor(pr5)
-					.articulo(art7)
-					.modeloInventario(modeloTiempoFijo)
-					.build();
-
-			ArticuloProveedor artProv10 = ArticuloProveedor.builder()
-					.costoPedido(1200F)
-					.costoUnitario(4500F)
-					.demoraEntrega(7)
-					.fhAsignacion(new Date())
-					.isPredeterminado(true)
-					.loteOptimo(null)
-					.nivelServicio(0.99F)
-					.stockSeguridad(400)
-					.proveedor(pr5)
-					.articulo(art8)
-					.modeloInventario(modeloTiempoFijo)
-					.build();
-
-			ArticuloProveedor artProv11 = ArticuloProveedor.builder()
-					.costoPedido(1200F)
-					.costoUnitario(4500F)
-					.demoraEntrega(7)
-					.fhAsignacion(new Date())
-					.isPredeterminado(true)
-					.loteOptimo(null)
-					.nivelServicio(0.99F)
-					.stockSeguridad(400)
 					.proveedor(pr1)
-					.articulo(art9)
+					.articulo(art4)
 					.modeloInventario(modeloTiempoFijo)
 					.build();
 
@@ -371,12 +222,6 @@ public class ProyectoIntegradorApplication {
 			artProv4 = repositorioArticuloProveedor.save(artProv4);
 			artProv5 = repositorioArticuloProveedor.save(artProv5);
 			artProv6 = repositorioArticuloProveedor.save(artProv6);
-			artProv7 = repositorioArticuloProveedor.save(artProv7);
-			artProv8 = repositorioArticuloProveedor.save(artProv8);
-			artProv9 = repositorioArticuloProveedor.save(artProv9);
-			artProv10 = repositorioArticuloProveedor.save(artProv10);
-			artProv11 = repositorioArticuloProveedor.save(artProv11);
-
 
 			EstadoOrdenCompra estado1 = EstadoOrdenCompra.builder()
 					.nombreEstadoOrdenCompra("Pendiente")
@@ -395,36 +240,49 @@ public class ProyectoIntegradorApplication {
 			estado3 = repositorioEstadoOrdenCompra.save(estado3);
 
 			OrdenCompraDetalle ocd1 = OrdenCompraDetalle.builder()
-					.cantidad(50)
+					.cantidad(5000)
+					.subTotal(7350)
 					.articuloProveedor(artProv2)
 					.build();
 
 			OrdenCompraDetalle ocd2 = OrdenCompraDetalle.builder()
-					.cantidad(30)
+					.cantidad(3000)
+					.subTotal(4345)
 					.articuloProveedor(artProv1)
 					.build();
 
 			OrdenCompraDetalle ocd3 = OrdenCompraDetalle.builder()
-					.cantidad(80)
+					.cantidad(8000)
+					.subTotal(7456)
 					.articuloProveedor(artProv3)
 					.build();
 
 			OrdenCompraDetalle ocd4 = OrdenCompraDetalle.builder()
-					.cantidad(120)
+					.cantidad(14000)
+					.subTotal(8954)
+					.articuloProveedor(artProv4)
+					.build();
+
+			OrdenCompraDetalle ocd5 = OrdenCompraDetalle.builder()
+					.cantidad(10000)
+					.subTotal(9812)
 					.articuloProveedor(artProv4)
 					.build();
 
 			OrdenCompra oc1 = OrdenCompra.builder()
 					.fhAltaOrdenCompra(new Date())
+					.total(50000)
 					.build();
 
 			oc1.setEstadoOrdenCompra(estado1);
 			oc1.addOrdenCompraDetalle(ocd1);
 			oc1.addOrdenCompraDetalle(ocd2);
 			oc1.addOrdenCompraDetalle(ocd3);
+			oc1.addOrdenCompraDetalle(ocd5);
 
 			OrdenCompra oc2 = OrdenCompra.builder()
 					.fhAltaOrdenCompra(new Date())
+					.total(35000)
 					.build();
 
 			oc2.setEstadoOrdenCompra(estado2);
@@ -433,7 +291,10 @@ public class ProyectoIntegradorApplication {
 			repositorioOrdenCompra.save(oc1);
 			repositorioOrdenCompra.save(oc2);
 
-			*/
+
+			 */
+
+			
 		};
 	}
 
