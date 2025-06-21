@@ -12,10 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -92,29 +89,70 @@ public class ExpertoModificarOrdenCompra {
 
     public void confirmar(DTODatosModificacion dto) {
         Optional<OrdenCompra> ordenCompra = repositorioOrdenCompra.obtenerOCVigentePorID(dto.getIdOC());
-        if (ordenCompra.isEmpty()) throw new CustomException("Error, no se encontró la orden de compra seleccionada");
+        if (ordenCompra.isEmpty()) {
+            throw new CustomException("Error, no se encontró la orden de compra seleccionada");
+        }
 
         Map<Long, DTODetallesDatosMod> detallesMap = dto.getDetallesMod().stream()
                 .collect(Collectors.toMap(DTODetallesDatosMod::getIdOCDetalle, Function.identity()));
 
+        // Verificación de punto de pedido
         for (OrdenCompraDetalle detalle : ordenCompra.get().getOrdenCompraDetalles()) {
             DTODetallesDatosMod detalleDTO = detallesMap.get(detalle.getId());
             if (detalleDTO != null) {
-                detalle.setCantidad(detalleDTO.getCantidad());
+                int puntoPedido = detalle.getArticuloProveedor().getArticulo().getPuntoPedido();
+                if (detalleDTO.getCantidad() < puntoPedido && !dto.isConfirmadoPorUsuario()) {
+                    throw new CustomException(
+                            "La cantidad para el artículo '" + detalle.getArticuloProveedor().getArticulo().getNombre() +
+                                    "' es menor al punto de pedido (" + puntoPedido + "). " +
+                                    "Si quieres continuar, confirma nuevamente la operación."
+                    );
+                }
+            }
+        }
 
+        // Si pasó todas las verificaciones, sigue con la lógica estándar
+        Map<Long, Long> articuloProveedorMap = new HashMap<>();
+
+        for (OrdenCompraDetalle detalle : ordenCompra.get().getOrdenCompraDetalles()) {
+            DTODetallesDatosMod detalleDTO = detallesMap.get(detalle.getId());
+            if (detalleDTO != null) {
                 Long idProveedorActual = detalle.getArticuloProveedor().getProveedor().getId();
                 Long idProveedorNuevo = detalleDTO.getIdProveedor();
 
                 if (Objects.equals(idProveedorActual, idProveedorNuevo)) {
-                    throw new CustomException("El proveedor seleccionado para el artículo '" + detalle.getArticuloProveedor().getArticulo().getNombre() + "' es el mismo que el actual.");
+                    detalle.setCantidad(detalleDTO.getCantidad());
+                    idProveedorNuevo = idProveedorActual;
+                } else {
+                    Optional<Proveedor> proveedor = repositorioProveedor.getProveedorVigentePorID(detalleDTO.getIdProveedor());
+                    if (proveedor.isPresent()) {
+                        detalle.getArticuloProveedor().setProveedor(proveedor.get());
+                    } else {
+                        throw new CustomException("Error: No existe el proveedor seleccionado para el artículo '"
+                                + detalle.getArticuloProveedor().getArticulo().getNombre() + "'");
+                    }
+                    detalle.setCantidad(detalleDTO.getCantidad());
                 }
 
-                Optional<Proveedor> proveedor = repositorioProveedor.getProveedorVigentePorID(idProveedorNuevo);
-                proveedor.ifPresent(p -> detalle.getArticuloProveedor().setProveedor(p));
+                Long idArticulo = detalle.getArticuloProveedor().getArticulo().getId();
+
+                if (articuloProveedorMap.containsKey(idArticulo) &&
+                        articuloProveedorMap.get(idArticulo).equals(detalle.getArticuloProveedor().getProveedor().getId())) {
+                    throw new CustomException(
+                            "Error: El artículo '" + detalle.getArticuloProveedor().getArticulo().getNombre() +
+                                    "' está asignado al mismo proveedor en más de un detalle."
+                    );
+                }
+
+                articuloProveedorMap.put(idArticulo, detalle.getArticuloProveedor().getProveedor().getId());
             }
         }
 
+        // Finalmente guarda
         repositorioOrdenCompra.save(ordenCompra.get());
     }
+
+
+
 
 }
