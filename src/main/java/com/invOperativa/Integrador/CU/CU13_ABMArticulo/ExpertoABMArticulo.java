@@ -10,6 +10,7 @@ import com.invOperativa.Integrador.Repositorios.RepositorioOrdenCompraDetalle;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
@@ -151,6 +152,11 @@ public class ExpertoABMArticulo {
 
         repositorio.save(artExistente);
 
+    }
+
+    public Articulo getArticulo(Long id) {
+        Articulo articulo = repositorio.findById(id).orElseThrow(() -> new CustomException("No existe el articulo que desea modificar") );
+        return articulo;
     }
 
     // Coloca fechaBaja en un articulo verificando antes sus relaciones
