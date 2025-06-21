@@ -251,7 +251,8 @@ public class ExpertoGenerarOrdenDeCompra {
 
         List<ArticuloProveedor> articuloProveedors = repositorioArticuloProveedor.findActivosByArticuloId(idArticulo);
 
-        DTOSugerirOrdenDetalle dtoSugerirOrdenDetalle = DTOSugerirOrdenDetalle.builder().build();
+        DTOSugerirOrdenDetalle dtoSugerirOrdenDetalle = DTOSugerirOrdenDetalle.builder()
+                .build();
 
         List<DTOProveedor> dtoProveedors = new ArrayList<>();
 
@@ -286,9 +287,26 @@ public class ExpertoGenerarOrdenDeCompra {
         return repositorioArticulo.findByfhBajaArticuloIsNull();
     }
 
-    // Trae las ordenes de compra vigentes
-    public List<OrdenCompra> traerOrdenes() {
-        return repositorioOrdenCompra.obtenerOrdenesVigentes();
+    // Trae id,estado,total y los articulos comprados de las ordenes de compra vigentes
+    public Collection<DTOVisualizarOC> traerOrdenes() {
+        Collection<OrdenCompra> ordenesVigentes = repositorioOrdenCompra.obtenerOrdenesVigentes();
+        Collection<DTOVisualizarOC> dto = new ArrayList<>();
+
+        for(OrdenCompra orden: ordenesVigentes){
+            DTOVisualizarOC aux = DTOVisualizarOC.builder()
+                    .idOrdenDeCompra(orden.getId())
+                    .total(orden.getTotal())
+                    .estado(orden.getEstadoOrdenCompra().getNombreEstadoOrdenCompra())
+                    .build();
+
+            for(OrdenCompraDetalle ocd: orden.getOrdenCompraDetalles()){
+                aux.addNombre(ocd.getArticuloProveedor().getArticulo().getNombre());
+            }
+
+            dto.add(aux);
+        }
+
+        return dto;
     }
 
 }

@@ -19,6 +19,8 @@ public class DTODatosModificacion {
     @Builder.Default
     Collection<DTODetallesDatosMod> detallesMod = new ArrayList<>();
 
+    private boolean confirmadoPorUsuario;
+
     public void addDetalle(DTODetallesDatosMod dtoDetalle){
         detallesMod.add(dtoDetalle);
     }
