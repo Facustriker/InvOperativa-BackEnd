@@ -6,21 +6,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@RestController
 @RequestMapping(path = "/CancelarOrdenDeCompra")
 public class ControladorCancelarOrdenDeCompra {
 
     @Autowired
     protected ExpertoCancelarOrdenDeCompra experto;
 
-    @GetMapping("/getDatosOC")
-    public ResponseEntity<?> getDatosOC(@RequestParam Long idOC) {
-        DTOModificarOrdenCompra ret = experto.getDatosOC(idOC);
+    @GetMapping("/getEstadoOC")
+    public ResponseEntity<?> getEstadoOC(@RequestParam Long idOC) {
+        DTOEstadoOC ret = experto.getEstadoOC(idOC);
         return ResponseEntity.ok(ret);
     }
 
-    @PostMapping("/cancelarOrden")
-    public ResponseEntity<?> cancelarOrden(@RequestBody DTODatosModificacion dto) {
-        experto.cancelarOrden();
+    @GetMapping("/cancelarOrden")
+    public ResponseEntity<?> cancelarOrden(@RequestParam Long idOC) {
+        experto.cancelarOC(idOC);
         return ResponseEntity.ok().build();
     }
 }
