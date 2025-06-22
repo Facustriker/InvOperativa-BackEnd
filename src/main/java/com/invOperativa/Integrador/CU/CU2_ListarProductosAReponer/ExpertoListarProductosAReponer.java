@@ -55,7 +55,6 @@ public class ExpertoListarProductosAReponer {
                         .proximaRevision(art.getProximaRevision())
                         .puntoPedido(art.getPuntoPedido())
                         .stock(art.getStock())
-                        .tiempoFijo(art.getTiempoFijo())
                         .build();
 
                 dtoArts.add(dtoArt);
