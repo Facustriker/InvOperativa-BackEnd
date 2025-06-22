@@ -43,4 +43,10 @@ public class ControladorABMEstadoOrdenCompra {
         return ResponseEntity.ok().build();
     }
 
+    @PutMapping("/modificar")
+    public ResponseEntity<?> modificar(@RequestBody DTOModificarEstado dto){
+        experto.modificar(dto);
+        return ResponseEntity.ok().build();
+    }
+
 }
