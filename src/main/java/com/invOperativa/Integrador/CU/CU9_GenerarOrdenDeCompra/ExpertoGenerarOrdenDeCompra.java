@@ -81,7 +81,10 @@ public class ExpertoGenerarOrdenDeCompra {
         EstadoOrdenCompra estadoPendiente = buscarEstadoPendiente();
         Date ahora = new Date();
 
-        DTOSalidaOrdenDeCompra dtoSalidaOrdenDeCompra = DTOSalidaOrdenDeCompra.builder().nombresPedidos(new ArrayList<>()).build();
+        DTOSalidaOrdenDeCompra dtoSalidaOrdenDeCompra = DTOSalidaOrdenDeCompra.builder()
+                .nombresPedidos(new ArrayList<>())
+                .ordenesDeCompra(new ArrayList<>())
+                .build();
 
         for (Map.Entry<Proveedor, List<DTODetalleOrden>> entry : detallesPorProveedor.entrySet()) {
 
