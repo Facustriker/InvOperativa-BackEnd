@@ -40,7 +40,7 @@ public class ExpertoABMProveedor {
         }
 
         if (proveedores.isEmpty()) {
-            throw new CustomException("Error, no se han encontrado proveedores");
+            return new ArrayList<>();
         }
 
         Collection<DTOProveedor> dto = new ArrayList<>();
@@ -62,6 +62,7 @@ public class ExpertoABMProveedor {
     }
 
     public void altaProveedor(String nombreProveedor) {
+
         if (repositorioProveedor.getProveedorVigentePorNombre(nombreProveedor).isPresent()) {
             throw new CustomException("Error, el nombre ingresado ya existe");
         }

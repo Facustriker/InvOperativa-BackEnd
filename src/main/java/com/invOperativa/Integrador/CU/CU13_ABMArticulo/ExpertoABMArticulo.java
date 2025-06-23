@@ -140,6 +140,32 @@ public class ExpertoABMArticulo {
 
             artExistente.setPuntoPedido(puntoPedido);
 
+            int loteOptimo = (int) Math.sqrt((2 * artExistente.getDemanda() * proveedorPredeterminado.getCostoPedido()) / artExistente.getCostoAlmacenamiento());
+
+            proveedorPredeterminado.setLoteOptimo(loteOptimo);
+
+            int stockSeguridad = (int) Math.round(z * desviacion);
+
+            proveedorPredeterminado.setStockSeguridad(stockSeguridad);
+
+            repositorioArticuloProveedor.save(proveedorPredeterminado);
+
+        } else if (artExistente.getTiempoFijo()!=null){
+
+            ArticuloProveedor proveedorPredeterminado = repositorioArticuloProveedor.findByArticuloIdAndIsPredeterminadoTrueAndFechaBajaIsNull(artExistente.getId()).orElseThrow(()->new CustomException("No hay proveedor predeterminado"));
+
+            Integer stockPedido = repositorioOrdenCompraDetalle.obtenerCantidadTotalDeArticuloEnviado(artExistente.getId());
+
+            if (stockPedido == null) {
+                stockPedido = 0;
+            }
+
+            int stockSeguridad = (int)(ArticuloProveedor.getZ(proveedorPredeterminado.getNivelServicio()) + ArticuloProveedor.getSigma(artExistente.getDemanda(),artExistente.getTiempoFijo(),proveedorPredeterminado.getDemoraEntrega()) - (artExistente.getStock() + stockPedido));
+
+            proveedorPredeterminado.setStockSeguridad(stockSeguridad);
+
+            repositorioArticuloProveedor.save(proveedorPredeterminado);
+
         }
 
         artExistente.setCostoAlmacenamiento(art.getCostoAlmacenamiento());

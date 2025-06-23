@@ -29,7 +29,7 @@ public class ExpertoListarArticuloXProveedores {
     public Collection<DTOProveedor> getProveedores(){
 
         Collection<DTOProveedor> dtosProveedores = new ArrayList<>();
-        Collection<Proveedor> proveedores = repositorioProveedor.findAll();
+        Collection<Proveedor> proveedores = repositorioProveedor.getProveedoresVigentes();
 
         for(Proveedor prov : proveedores){
             DTOProveedor dtoProv = DTOProveedor.builder()
@@ -67,7 +67,7 @@ public class ExpertoListarArticuloXProveedores {
         }
 
         if (dtoArticulos.isEmpty()) {
-            throw new CustomException("Error, no se han encontrado articulos para este proveedor");
+            return new ArrayList<>();
         }
 
         return dtoArticulos;

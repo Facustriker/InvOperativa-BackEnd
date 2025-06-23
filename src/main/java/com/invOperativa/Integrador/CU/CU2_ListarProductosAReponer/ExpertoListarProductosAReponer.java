@@ -35,7 +35,7 @@ public class ExpertoListarProductosAReponer {
 
         Collection<Articulo> articulos = repositorioArticulo.findByfhBajaArticuloIsNull();
         if (articulos.isEmpty()) {
-            throw new CustomException("Error, no existen articulos en el inventario");
+            return new ArrayList<>();
         }
 
         Collection<DTOArticulo> dtoArts = new ArrayList<>();
@@ -43,7 +43,7 @@ public class ExpertoListarProductosAReponer {
         for (Articulo art : articulos) {
 
             int stock = art.getStock();
-            int puntoPedido = art.getPuntoPedido();
+
 
             //Obtener el articuloProveedor que sea predeterminado
             Collection<ArticuloProveedor> articulosProveedor = repositoriArticuloProveedor.getArticulosProveedorVigentesPorArticuloId(art.getId());
@@ -67,9 +67,15 @@ public class ExpertoListarProductosAReponer {
                 System.out.println("Advertencia: El artículo " + art.getNombre() + " no tiene un proveedor predeterminado, por favor asignelo para poder obtener el stock de Seguridad");
                 continue;
             }
+
+            if (articuloProveedorPredeterminado.getModeloInventario().getNombreModelo().equals("Tiempo fijo")){
+                continue;
+            }
             
             //Obtener el stockSeguridad
             int stockSeguridad = articuloProveedorPredeterminado.getStockSeguridad();
+
+            int puntoPedido = art.getPuntoPedido();
 
             if (stock <= puntoPedido && !(repositorioOrdenCompraDetalle.existsArticuloEnOrdenPendienteOEnviada(art.getId()))) {
 

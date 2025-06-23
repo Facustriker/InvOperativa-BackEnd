@@ -36,7 +36,7 @@ public class ExpertoListarProductosFaltantes {
         //Obtener todos los articulos
         Collection<Articulo> articulos = repositorioArticulo.findAll();
         if (articulos.isEmpty()) {
-            throw new CustomException("Error, no existen articulos en el inventario");
+            return new ArrayList<>();
         }
 
         Collection<DTOArticulo> dtoArts = new ArrayList<>();

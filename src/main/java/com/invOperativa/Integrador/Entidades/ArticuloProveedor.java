@@ -107,7 +107,11 @@ public class ArticuloProveedor extends BaseEntity{
         float z = (float) getZ(nivelServicio);
         float sigma = getSigma(demanda , tiempoFijo, demoraEntrega);
         int stockActual = articulo.getStock();
-        int stockPedido = repositorioOrdenCompraDetalle.obtenerCantidadTotalDeArticuloEnviado(articulo.getId());
+        Integer stockPedido = repositorioOrdenCompraDetalle.obtenerCantidadTotalDeArticuloEnviado(articulo.getId());
+
+        if (stockPedido == null){
+            stockPedido = 0;
+        }
 
         float primerTermino = demanda * (tiempoFijo + demoraEntrega);
         float segundoTermino = z * sigma - (stockActual + stockPedido);
