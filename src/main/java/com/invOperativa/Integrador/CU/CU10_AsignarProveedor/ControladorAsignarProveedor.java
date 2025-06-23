@@ -12,7 +12,7 @@ public class ControladorAsignarProveedor {
     private ExpertoAsignarProveedor experto;
 
     @PostMapping("/asignar")
-    public ResponseEntity<?> asignar (@RequestParam DTOAsignarProveedor dto){
+    public ResponseEntity<?> asignar (@RequestBody DTOAsignarProveedor dto){
         experto.asignarProveedor(dto);
         return ResponseEntity.ok().build();
     }
