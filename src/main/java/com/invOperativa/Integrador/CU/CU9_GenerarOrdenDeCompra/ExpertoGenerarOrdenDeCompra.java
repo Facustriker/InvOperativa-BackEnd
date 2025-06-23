@@ -267,6 +267,7 @@ public class ExpertoGenerarOrdenDeCompra {
                     .nombreProvedor(proveedor.getNombreProveedor())
                     .isPredeterminado(articuloProveedor.isPredeterminado())
                     .costoUnitario(articuloProveedor.getCostoUnitario())
+                    .articuloProveedorId(articuloProveedor.getId())
                     .build();
 
             dtoProveedors.add(dtoProveedor);

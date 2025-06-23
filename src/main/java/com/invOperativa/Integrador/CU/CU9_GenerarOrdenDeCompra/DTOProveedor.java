@@ -14,4 +14,5 @@ public class DTOProveedor {
     private String nombreProvedor;
     private boolean isPredeterminado;
     private float costoUnitario;
+    private Long articuloProveedorId;
 }
