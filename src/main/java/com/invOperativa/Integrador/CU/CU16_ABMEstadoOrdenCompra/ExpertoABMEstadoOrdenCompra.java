@@ -5,6 +5,7 @@ import com.invOperativa.Integrador.Entidades.EstadoOrdenCompra;
 import com.invOperativa.Integrador.Entidades.OrdenCompra;
 import com.invOperativa.Integrador.Repositorios.RepositorioEstadoOrdenCompra;
 import com.invOperativa.Integrador.Repositorios.RepositorioOrdenCompra;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,7 @@ public class ExpertoABMEstadoOrdenCompra {
 
 
         if(estados.isEmpty()){
-            throw new CustomException("Error, no se han encontrado estados");
+            return new ArrayList<>();
         }
 
         Collection<DTOABMEstadoOrdenCompra> dto = new ArrayList<>();
@@ -130,6 +131,25 @@ public class ExpertoABMEstadoOrdenCompra {
         estadoModificado.get().setNombreEstadoOrdenCompra(dto.getNombreEstado());
 
         repositorioEstadoOrdenCompra.save(estadoModificado.get());
+    }
+
+    @Transactional
+    public void modificar(DTOModificarEstado dto) {
+
+        EstadoOrdenCompra estadoViejo = repositorioEstadoOrdenCompra.obtenerEstadoVigentePorID(dto.getId()).orElseThrow(() -> new CustomException("No existe un estado vigente con ese id"));
+
+        if (dto.getNuevoNombre().trim().isEmpty()) {
+            throw new CustomException("No puede ponerse un nuevo nombre vacío");
+        }
+
+        if (repositorioEstadoOrdenCompra.findByNombreEstadoOrdenCompraAndFhBajaEstadoOrdenCompraIsNull(dto.getNuevoNombre()) != null){
+            throw new CustomException("Ya existe un estado con ese nombre");
+        }
+
+        estadoViejo.setNombreEstadoOrdenCompra(dto.getNuevoNombre());
+
+        repositorioEstadoOrdenCompra.save(estadoViejo);
+
     }
 
 }

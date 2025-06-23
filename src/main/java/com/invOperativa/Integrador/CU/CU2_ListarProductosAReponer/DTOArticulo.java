@@ -25,5 +25,5 @@ public class DTOArticulo {
     private int puntoPedido;
     private int stock;
     private int stockSeguridad;
-    private int tiempoFijo;
+
 }

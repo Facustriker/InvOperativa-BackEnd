@@ -81,6 +81,7 @@ public class ExpertoListarProductosFaltantes {
 
                 DTOArticulo dtoArt = DTOArticulo.builder()
                         .id(art.getId())
+                        .nombreArt(art.getNombre())
                         .stock(art.getStock())
                         .stockSeguridad(stockSeguridad)
                         .costoAlmacenamiento(art.getCostoAlmacenamiento())
@@ -90,7 +91,6 @@ public class ExpertoListarProductosFaltantes {
                         .precioUnitario(art.getPrecioUnitario())
                         .proximaRevision(art.getProximaRevision())
                         .puntoPedido(art.getPuntoPedido())
-                        .tiempoFijo(art.getTiempoFijo())
                         .build();
 
                 dtoArts.add(dtoArt);

@@ -24,6 +24,9 @@ public class ExpertoListarProductosAReponer {
     private final RepositorioArticulo repositorioArticulo;
 
     @Autowired
+    private final RepositorioArticuloProveedor repositoriArticuloProveedor;
+
+    @Autowired
     private final RepositorioOrdenCompraDetalle repositorioOrdenCompraDetalle;
 
 
@@ -42,6 +45,32 @@ public class ExpertoListarProductosAReponer {
             int stock = art.getStock();
             int puntoPedido = art.getPuntoPedido();
 
+            //Obtener el articuloProveedor que sea predeterminado
+            Collection<ArticuloProveedor> articulosProveedor = repositoriArticuloProveedor.getArticulosProveedorVigentesPorArticuloId(art.getId());
+            
+            //Me fijo si el articulo tiene articulosProveedor relacionados
+            if (articulosProveedor.isEmpty()) {
+                continue;
+            }
+
+            //Si tiene articulosProveedor relacionados, me fijo cuál es el predeterminado
+            ArticuloProveedor articuloProveedorPredeterminado = null;
+
+            for (ArticuloProveedor ap : articulosProveedor){ 
+                if (ap.isPredeterminado()) {
+                    articuloProveedorPredeterminado = ap;
+                }
+            }
+            
+            //Si no tiene articuloProveedor predeterminado, no se puede calcular el stockSeguridad
+            if (articuloProveedorPredeterminado == null) {
+                System.out.println("Advertencia: El artículo " + art.getNombre() + " no tiene un proveedor predeterminado, por favor asignelo para poder obtener el stock de Seguridad");
+                continue;
+            }
+            
+            //Obtener el stockSeguridad
+            int stockSeguridad = articuloProveedorPredeterminado.getStockSeguridad();
+
             if (stock <= puntoPedido && !(repositorioOrdenCompraDetalle.existsArticuloEnOrdenPendienteOEnviada(art.getId()))) {
 
                 DTOArticulo dtoArt = DTOArticulo.builder()
@@ -55,7 +84,7 @@ public class ExpertoListarProductosAReponer {
                         .proximaRevision(art.getProximaRevision())
                         .puntoPedido(art.getPuntoPedido())
                         .stock(art.getStock())
-                        .tiempoFijo(art.getTiempoFijo())
+                        .stockSeguridad(stockSeguridad)
                         .build();
 
                 dtoArts.add(dtoArt);

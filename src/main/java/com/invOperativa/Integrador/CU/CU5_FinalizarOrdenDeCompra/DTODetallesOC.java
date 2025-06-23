@@ -27,4 +27,6 @@ public class DTODetallesOC {
 
     private String nombreProveedor;
 
+    private int stock;
+
 }

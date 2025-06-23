@@ -57,6 +57,7 @@ public class ExpertoModificarOrdenCompra {
                     .nombreProveedor(detalle.getArticuloProveedor().getProveedor().getNombreProveedor())
                     .isPredeterminado(detalle.getArticuloProveedor().isPredeterminado())
                     .puntoPedido(detalle.getArticuloProveedor().getArticulo().getPuntoPedido())
+                    .stock(detalle.getArticuloProveedor().getArticulo().getStock())
                     .build();
 
             dto.addDetalle(aux);
