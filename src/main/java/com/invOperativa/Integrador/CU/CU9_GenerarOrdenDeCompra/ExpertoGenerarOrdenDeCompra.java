@@ -293,9 +293,15 @@ public class ExpertoGenerarOrdenDeCompra {
         Collection<DTOVisualizarOC> dto = new ArrayList<>();
 
         for(OrdenCompra orden: ordenesVigentes){
+            // Calcular el total dinámicamente sumando los subtotales de los detalles
+            float totalCalculado = 0.0f;
+            for(OrdenCompraDetalle ocd: orden.getOrdenCompraDetalles()){
+                totalCalculado += ocd.getSubTotal();
+            }
+            
             DTOVisualizarOC aux = DTOVisualizarOC.builder()
                     .idOrdenDeCompra(orden.getId())
-                    .total(orden.getTotal())
+                    .total(totalCalculado)
                     .estado(orden.getEstadoOrdenCompra().getNombreEstadoOrdenCompra())
                     .build();
 
