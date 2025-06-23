@@ -277,6 +277,10 @@ public class ExpertoAsignarProveedor {
         repositorioArticuloProveedor.save(articuloProveedor);
     }
 
+    public List<ArticuloProveedor> getAll() {
+        return repositorioArticuloProveedor.findAll();
+    }
+
 }
 
 
