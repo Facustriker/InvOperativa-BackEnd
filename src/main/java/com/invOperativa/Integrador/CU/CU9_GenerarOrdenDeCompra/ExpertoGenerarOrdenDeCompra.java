@@ -81,7 +81,10 @@ public class ExpertoGenerarOrdenDeCompra {
         EstadoOrdenCompra estadoPendiente = buscarEstadoPendiente();
         Date ahora = new Date();
 
-        DTOSalidaOrdenDeCompra dtoSalidaOrdenDeCompra = DTOSalidaOrdenDeCompra.builder().nombresPedidos(new ArrayList<>()).build();
+        DTOSalidaOrdenDeCompra dtoSalidaOrdenDeCompra = DTOSalidaOrdenDeCompra.builder()
+                .nombresPedidos(new ArrayList<>())
+                .ordenesDeCompra(new ArrayList<>())
+                .build();
 
         for (Map.Entry<Proveedor, List<DTODetalleOrden>> entry : detallesPorProveedor.entrySet()) {
 
@@ -293,9 +296,15 @@ public class ExpertoGenerarOrdenDeCompra {
         Collection<DTOVisualizarOC> dto = new ArrayList<>();
 
         for(OrdenCompra orden: ordenesVigentes){
+            // Calcular el total dinámicamente sumando los subtotales de los detalles
+            float totalCalculado = 0.0f;
+            for(OrdenCompraDetalle ocd: orden.getOrdenCompraDetalles()){
+                totalCalculado += ocd.getSubTotal();
+            }
+            
             DTOVisualizarOC aux = DTOVisualizarOC.builder()
                     .idOrdenDeCompra(orden.getId())
-                    .total(orden.getTotal())
+                    .total(totalCalculado)
                     .estado(orden.getEstadoOrdenCompra().getNombreEstadoOrdenCompra())
                     .build();
 

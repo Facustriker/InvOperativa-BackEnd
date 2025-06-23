@@ -19,7 +19,7 @@ public class ControladorCancelarOrdenDeCompra {
         return ResponseEntity.ok(ret);
     }
 
-    @GetMapping("/cancelarOrden")
+    @PutMapping("/cancelarOrden")
     public ResponseEntity<?> cancelarOrden(@RequestParam Long idOC) {
         experto.cancelarOC(idOC);
         return ResponseEntity.ok().build();
