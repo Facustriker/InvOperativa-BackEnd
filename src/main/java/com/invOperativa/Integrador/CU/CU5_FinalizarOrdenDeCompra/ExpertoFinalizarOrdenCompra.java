@@ -64,6 +64,7 @@ public class ExpertoFinalizarOrdenCompra {
                     .nombreArt(detalle.getArticuloProveedor().getArticulo().getNombre())
                     .costoAlmacenamientoArt(detalle.getArticuloProveedor().getArticulo().getCostoAlmacenamiento())
                     .nombreProveedor(detalle.getArticuloProveedor().getProveedor().getNombreProveedor())
+                    .stock(detalle.getArticuloProveedor().getArticulo().getStock())
                     .build();
 
             dto.getDetallesOC().add(aux);

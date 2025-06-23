@@ -31,4 +31,6 @@ public class DTODetallesOC {
 
     private int puntoPedido;
 
+    private int stock;
+
 }
