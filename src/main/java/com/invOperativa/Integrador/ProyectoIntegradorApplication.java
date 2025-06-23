@@ -211,7 +211,7 @@ public class ProyectoIntegradorApplication {
 					.loteOptimo(999)
 					.nivelServicio(0.99F)
 					.stockSeguridad(400)
-					.proveedor(pr1)
+					.proveedor(pr2)
 					.articulo(art4)
 					.modeloInventario(modeloTiempoFijo)
 					.build();
@@ -248,13 +248,13 @@ public class ProyectoIntegradorApplication {
 			OrdenCompraDetalle ocd2 = OrdenCompraDetalle.builder()
 					.cantidad(3000)
 					.subTotal(4345)
-					.articuloProveedor(artProv1)
+					.articuloProveedor(artProv3)
 					.build();
 
 			OrdenCompraDetalle ocd3 = OrdenCompraDetalle.builder()
 					.cantidad(8000)
 					.subTotal(7456)
-					.articuloProveedor(artProv3)
+					.articuloProveedor(artProv6)
 					.build();
 
 			OrdenCompraDetalle ocd4 = OrdenCompraDetalle.builder()
@@ -266,7 +266,7 @@ public class ProyectoIntegradorApplication {
 			OrdenCompraDetalle ocd5 = OrdenCompraDetalle.builder()
 					.cantidad(10000)
 					.subTotal(9812)
-					.articuloProveedor(artProv4)
+					.articuloProveedor(artProv2)
 					.build();
 
 			OrdenCompra oc1 = OrdenCompra.builder()
@@ -278,7 +278,6 @@ public class ProyectoIntegradorApplication {
 			oc1.addOrdenCompraDetalle(ocd1);
 			oc1.addOrdenCompraDetalle(ocd2);
 			oc1.addOrdenCompraDetalle(ocd3);
-			oc1.addOrdenCompraDetalle(ocd5);
 
 			OrdenCompra oc2 = OrdenCompra.builder()
 					.fhAltaOrdenCompra(new Date())
@@ -287,11 +286,16 @@ public class ProyectoIntegradorApplication {
 
 			oc2.setEstadoOrdenCompra(estado2);
 			oc2.addOrdenCompraDetalle(ocd4);
+			oc2.addOrdenCompraDetalle(ocd5);
 
 			repositorioOrdenCompra.save(oc1);
 			repositorioOrdenCompra.save(oc2);
 
-			*/
+
+
+
+			 */
+
 
 			
 		};
