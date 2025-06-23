@@ -42,7 +42,7 @@ public class ExpertoABMModeloInventario {
 
         //utilizo la variable modelo que acabo de llenar con data traida de la base de datos
         if(modelos.isEmpty()){
-            throw new CustomException("Error, no se han encontrado Modelos de Inventario");
+            return new ArrayList<>();
         }
 
 
