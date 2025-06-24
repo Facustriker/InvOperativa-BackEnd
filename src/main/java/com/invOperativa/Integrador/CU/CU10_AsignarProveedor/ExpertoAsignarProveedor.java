@@ -99,6 +99,8 @@ public class ExpertoAsignarProveedor {
                 .loteOptimo(null)
                 .build();
 
+        System.out.println(dto.isPredeterminado());
+
         if (articuloProveedor.isPredeterminado()){
             if (modeloInventario.getNombreModelo().equals("Tiempo fijo")) {
                 LocalDate fechaActual = LocalDate.now();
@@ -125,7 +127,7 @@ public class ExpertoAsignarProveedor {
                     stockPedido = 0;
                 }
 
-                int stockSeguridad = (int)(ArticuloProveedor.getZ(articuloProveedor.getNivelServicio()) + ArticuloProveedor.getSigma(articulo.getDemanda(),articulo.getTiempoFijo(),articuloProveedor.getDemoraEntrega()) - (articulo.getStock() + stockPedido));
+                int stockSeguridad = (int)(ArticuloProveedor.getZ(articuloProveedor.getNivelServicio()) + ArticuloProveedor.getSigma(articulo.getDemanda(),dto.getTiempoFijo(),articuloProveedor.getDemoraEntrega()) - (articulo.getStock() + stockPedido));
 
                 // Borrar campos del otro modelo
                 articulo.setPuntoPedido(null);
@@ -236,7 +238,7 @@ public class ExpertoAsignarProveedor {
                     stockPedido = 0;
                 }
 
-                int stockSeguridad = (int)(ArticuloProveedor.getZ(articuloProveedor.getNivelServicio()) + ArticuloProveedor.getSigma(articulo.getDemanda(),articulo.getTiempoFijo(),articuloProveedor.getDemoraEntrega()) - (articulo.getStock() + stockPedido));
+                int stockSeguridad = (int)(ArticuloProveedor.getZ(articuloProveedor.getNivelServicio()) + ArticuloProveedor.getSigma(articulo.getDemanda(),dto.getTiempoFijo(),articuloProveedor.getDemoraEntrega()) - (articulo.getStock() + stockPedido));
 
                 // Limpiar datos de lote fijo
                 articulo.setPuntoPedido(null);
