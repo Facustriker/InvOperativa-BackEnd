@@ -49,11 +49,11 @@ public class ProyectoIntegradorApplication {
 			/*
 
 			ModeloInventario modeloLoteFijo = ModeloInventario.builder()
-					.nombreModelo("Lote Fijo")
+					.nombreModelo("Lote fijo")
 					.build();
 
 			ModeloInventario modeloTiempoFijo = ModeloInventario.builder()
-					.nombreModelo("Tiempo Fijo")
+					.nombreModelo("Tiempo fijo")
 					.build();
 
 			modeloLoteFijo = repositorioModeloInventario.save(modeloLoteFijo);

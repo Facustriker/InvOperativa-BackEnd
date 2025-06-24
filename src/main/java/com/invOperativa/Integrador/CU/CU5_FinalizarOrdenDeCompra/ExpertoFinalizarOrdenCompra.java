@@ -91,7 +91,7 @@ public class ExpertoFinalizarOrdenCompra {
 
         // Buscar el modelo de tiempo fijo
         ModeloInventario modeloTiempoFijo = repositorioModeloInventario.getModelosVigentes().stream()
-                .filter(m -> m.getNombreModelo().equals("Tiempo Fijo"))
+                .filter(m -> m.getNombreModelo().equals("Tiempo fijo"))
                 .findFirst()
                 .orElseThrow(() -> new CustomException("Error, no se encontró el modelo de tiempo fijo"));
 
