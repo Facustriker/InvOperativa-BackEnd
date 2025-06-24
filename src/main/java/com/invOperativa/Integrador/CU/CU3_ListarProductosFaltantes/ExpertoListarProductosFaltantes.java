@@ -34,7 +34,7 @@ public class ExpertoListarProductosFaltantes {
     public Collection<DTOArticulo> getArticulosFaltantes() {
         
         //Obtener todos los articulos
-        Collection<Articulo> articulos = repositorioArticulo.findAll();
+        Collection<Articulo> articulos = repositorioArticulo.findByfhBajaArticuloIsNull();
         if (articulos.isEmpty()) {
             return new ArrayList<>();
         }
@@ -79,21 +79,39 @@ public class ExpertoListarProductosFaltantes {
             //Si el stock es menor o igual al stockSeguridad y no tiene una orden de compra pendiente o enviada, se agrega al listado
             if (stock <= stockSeguridad && !(repositorioOrdenCompraDetalle.existsArticuloEnOrdenPendienteOEnviada(art.getId()))) {
 
-                DTOArticulo dtoArt = DTOArticulo.builder()
-                        .id(art.getId())
-                        .nombreArt(art.getNombre())
-                        .stock(art.getStock())
-                        .stockSeguridad(stockSeguridad)
-                        .costoAlmacenamiento(art.getCostoAlmacenamiento())
-                        .descripcionArt(art.getDescripcionArt())
-                        .fhBajaArticulo(art.getFhBajaArticulo())
-                        .inventarioMaxArticulo(art.getInventarioMaxArticulo())
-                        .precioUnitario(art.getPrecioUnitario())
-                        .proximaRevision(art.getProximaRevision())
-                        .puntoPedido(art.getPuntoPedido())
-                        .build();
+                if (articuloProveedorPredeterminado.getModeloInventario().getNombreModelo().equals("Lote fijo")){
+                    DTOArticulo dtoArt = DTOArticulo.builder()
+                            .id(art.getId())
+                            .nombreArt(art.getNombre())
+                            .stock(art.getStock())
+                            .stockSeguridad(stockSeguridad)
+                            .costoAlmacenamiento(art.getCostoAlmacenamiento())
+                            .descripcionArt(art.getDescripcionArt())
+                            .fhBajaArticulo(art.getFhBajaArticulo())
+                            .inventarioMaxArticulo(art.getInventarioMaxArticulo())
+                            .precioUnitario(art.getPrecioUnitario())
+                            .proximaRevision(null)
+                            .puntoPedido(art.getPuntoPedido())
+                            .build();
 
-                dtoArts.add(dtoArt);
+                    dtoArts.add(dtoArt);
+                } else {
+                    DTOArticulo dtoArt = DTOArticulo.builder()
+                            .id(art.getId())
+                            .nombreArt(art.getNombre())
+                            .stock(art.getStock())
+                            .stockSeguridad(stockSeguridad)
+                            .costoAlmacenamiento(art.getCostoAlmacenamiento())
+                            .descripcionArt(art.getDescripcionArt())
+                            .fhBajaArticulo(art.getFhBajaArticulo())
+                            .inventarioMaxArticulo(art.getInventarioMaxArticulo())
+                            .precioUnitario(art.getPrecioUnitario())
+                            .proximaRevision(art.getProximaRevision())
+                            .puntoPedido(0)
+                            .build();
+
+                    dtoArts.add(dtoArt);
+                }
             }
         }
 

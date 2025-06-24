@@ -36,13 +36,17 @@ public class ExpertoAjustarInventario {
             throw new CustomException("Error, el articulo no se encontró");
         }
 
-        Articulo articulo = articuloOpt.get();
-        int puntoPedido = articulo.getPuntoPedido();
+        int puntoPedido = 0;
 
-        if (stock < puntoPedido && !forzarConfirmacion) {
-            // Mostrar advertencia sin guardar
-            return true;
+        Articulo articulo = articuloOpt.get();
+        if(articulo.getPuntoPedido() != null){
+            puntoPedido = articulo.getPuntoPedido();
+            if (stock < puntoPedido && !forzarConfirmacion) {
+                // Mostrar advertencia sin guardar
+                return true;
+            }
         }
+
 
         if(stock > articulo.getInventarioMaxArticulo()){
             throw new CustomException("Error, el stock ingresado es mayor que el tamaño maximo de inventario para este articulo");

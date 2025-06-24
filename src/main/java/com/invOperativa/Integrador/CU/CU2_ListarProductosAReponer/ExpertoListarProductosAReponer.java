@@ -87,7 +87,7 @@ public class ExpertoListarProductosAReponer {
                         .fhBajaArticulo(art.getFhBajaArticulo())
                         .inventarioMaxArticulo(art.getInventarioMaxArticulo())
                         .precioUnitario(art.getPrecioUnitario())
-                        .proximaRevision(art.getProximaRevision())
+                        .proximaRevision(null)
                         .puntoPedido(art.getPuntoPedido())
                         .stock(art.getStock())
                         .stockSeguridad(stockSeguridad)
