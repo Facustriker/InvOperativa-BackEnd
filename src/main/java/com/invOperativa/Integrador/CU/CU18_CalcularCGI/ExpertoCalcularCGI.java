@@ -60,10 +60,6 @@ public class ExpertoCalcularCGI {
 
             CGI = CC + CP + CA;
 
-            if (CC < 0 || CP < 0 || CA < 0) {
-                throw new CustomException("Error, los valores calculados dieron como resultado números negativos");
-            }
-
             DTODatosCGI aux = DTODatosCGI.builder()
                     .nombreProveedor(articuloProveedor.getProveedor().getNombreProveedor())
                     .nombreTipoModelo(articuloProveedor.getModeloInventario().getNombreModelo())
@@ -97,10 +93,6 @@ public class ExpertoCalcularCGI {
             float CA = q / 2 + stockSeguridad * costoAlmacenamiento;
 
             CGI = CC + CP + CA;
-
-            if (CC < 0 || CP < 0 || CA < 0) {
-                throw new CustomException("Error, los valores calculados dieron como resultado números negativos");
-            }
 
             DTODatosCGI aux = DTODatosCGI.builder()
                     .nombreProveedor(articuloProveedor.getProveedor().getNombreProveedor())

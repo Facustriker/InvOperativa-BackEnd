@@ -139,9 +139,6 @@ public class ExpertoAsignarProveedor {
 
                 repositorioArticulo.save(articulo);
 
-                int loteOptimo = articuloProveedor.getCantidadTiempoFijo(repositorioOrdenCompraDetalle);
-                articuloProveedor.setLoteOptimo(loteOptimo);
-
             } else {
                 float tiempoEntrega = dto.getDemoraEntrega();
                 float nivelServicio = dto.getNivelServicio();
