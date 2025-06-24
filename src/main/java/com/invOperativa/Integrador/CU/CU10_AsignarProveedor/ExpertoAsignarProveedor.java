@@ -63,6 +63,9 @@ public class ExpertoAsignarProveedor {
 
     @Transactional
     public void asignarProveedor(DTOAsignarProveedor dto) {
+
+        System.out.println(dto.isPredeterminado());
+
         ModeloInventario modeloInventario = repositorioModeloInventario.findActivoById(dto.getModeloInventarioId())
                 .orElseThrow(() -> new CustomException("No existe el modelo de inventario"));
 
@@ -127,7 +130,7 @@ public class ExpertoAsignarProveedor {
                     stockPedido = 0;
                 }
 
-                int stockSeguridad = (int)(ArticuloProveedor.getZ(articuloProveedor.getNivelServicio()) + ArticuloProveedor.getSigma(articulo.getDemanda(),dto.getTiempoFijo(),articuloProveedor.getDemoraEntrega()) - (articulo.getStock() + stockPedido));
+                int stockSeguridad = (int)(ArticuloProveedor.getZ(articuloProveedor.getNivelServicio()) * ArticuloProveedor.getSigma(articulo.getDemanda(),dto.getTiempoFijo(),articuloProveedor.getDemoraEntrega()));
 
                 // Borrar campos del otro modelo
                 articulo.setPuntoPedido(null);
@@ -165,11 +168,12 @@ public class ExpertoAsignarProveedor {
             int loteOptimo = (int) Math.sqrt((2 * articulo.getDemanda() * dto.getCostoPedido()) / articulo.getCostoAlmacenamiento());
             articuloProveedor.setLoteOptimo(loteOptimo);
             repositorioArticulo.save(articulo);
-        } else {
+        }
+        /*else {
             int loteOptimo = articuloProveedor.getCantidadTiempoFijo(repositorioOrdenCompraDetalle, dto.getTiempoFijo());
             articuloProveedor.setLoteOptimo(loteOptimo);
             repositorioArticulo.save(articulo);
-        }
+        }*/
 
         repositorioArticuloProveedor.save(articuloProveedor);
     }
@@ -238,7 +242,7 @@ public class ExpertoAsignarProveedor {
                     stockPedido = 0;
                 }
 
-                int stockSeguridad = (int)(ArticuloProveedor.getZ(articuloProveedor.getNivelServicio()) + ArticuloProveedor.getSigma(articulo.getDemanda(),dto.getTiempoFijo(),articuloProveedor.getDemoraEntrega()) - (articulo.getStock() + stockPedido));
+                int stockSeguridad = (int)(ArticuloProveedor.getZ(articuloProveedor.getNivelServicio()) * ArticuloProveedor.getSigma(articulo.getDemanda(),dto.getTiempoFijo(),articuloProveedor.getDemoraEntrega()));
 
                 // Limpiar datos de lote fijo
                 articulo.setPuntoPedido(null);
@@ -246,9 +250,6 @@ public class ExpertoAsignarProveedor {
                 articuloProveedor.setLoteOptimo(null);
 
                 repositorioArticulo.save(articulo);
-
-                int loteOptimo = articuloProveedor.getCantidadTiempoFijo(repositorioOrdenCompraDetalle);
-                articuloProveedor.setLoteOptimo(loteOptimo);
 
             } else {
                 float tiempoEntrega = dto.getDemoraEntrega();
@@ -278,11 +279,13 @@ public class ExpertoAsignarProveedor {
             int loteOptimo = (int) Math.sqrt((2 * articulo.getDemanda() * dto.getCostoPedido()) / articulo.getCostoAlmacenamiento());
             articuloProveedor.setLoteOptimo(loteOptimo);
             repositorioArticulo.save(articulo);
-        } else {
+        }
+
+        /*else {
             int loteOptimo = articuloProveedor.getCantidadTiempoFijo(repositorioOrdenCompraDetalle, dto.getTiempoFijo());
             articuloProveedor.setLoteOptimo(loteOptimo);
             repositorioArticulo.save(articulo);
-        }
+        }*/
 
         repositorioArticuloProveedor.save(articuloProveedor);
     }

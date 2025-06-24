@@ -160,7 +160,7 @@ public class ExpertoABMArticulo {
                 stockPedido = 0;
             }
 
-            int stockSeguridad = (int)(ArticuloProveedor.getZ(proveedorPredeterminado.getNivelServicio()) + ArticuloProveedor.getSigma(artExistente.getDemanda(),artExistente.getTiempoFijo(),proveedorPredeterminado.getDemoraEntrega()) - (artExistente.getStock() + stockPedido));
+            int stockSeguridad = (int)(ArticuloProveedor.getZ(proveedorPredeterminado.getNivelServicio()) + ArticuloProveedor.getSigma(artExistente.getDemanda(),artExistente.getTiempoFijo(),proveedorPredeterminado.getDemoraEntrega()));
 
             proveedorPredeterminado.setStockSeguridad(stockSeguridad);
 
