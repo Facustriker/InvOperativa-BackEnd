@@ -21,97 +21,101 @@ public class ExpertoCalcularCGI {
     @Autowired
     private final RepositorioArticuloProveedor repositorioArticuloProveedor;
 
-    public DTOCalcularCGI calculoCGI(Long idArticulo){
-
+    public DTOCalcularCGI calculoCGI(Long idArticulo) {
         Collection<ArticuloProveedor> artProveedores = repositorioArticuloProveedor.getArticulosProveedorVigentesPorArticuloId(idArticulo);
         Optional<ArticuloProveedor> artProveedorAuxiliar = artProveedores.stream().findFirst();
 
-        if(artProveedorAuxiliar.isEmpty()){
-            throw new CustomException("Error, el articulo no tiene un proveedor asignado");
+        if (artProveedorAuxiliar.isEmpty()) {
+            throw new CustomException("Error, el artículo no tiene un proveedor asignado");
         }
 
         String nombreArticulo = artProveedorAuxiliar.get().getArticulo().getNombre();
 
+        // Filtramos para obtener el predeterminado
+        Optional<ArticuloProveedor> predeterminado = artProveedores.stream()
+                .filter(ArticuloProveedor::isPredeterminado)
+                .findFirst();
+
+        if (predeterminado.isEmpty()) {
+            throw new CustomException("Error, no existe un proveedor marcado como predeterminado para este artículo");
+        }
+
+        ArticuloProveedor articuloProveedor = predeterminado.get();
         DTOCalcularCGI dtoCalcularCGI = DTOCalcularCGI.builder()
                 .nombreArticulo(nombreArticulo)
                 .build();
 
-            for(ArticuloProveedor articuloProveedor: artProveedores){
-                if ("Lote fijo".equals(articuloProveedor.getModeloInventario().getNombreModelo())) {
+        // Ahora calculamos CGI SOLO para este proveedor
+        if ("Lote fijo".equals(articuloProveedor.getModeloInventario().getNombreModelo())) {
+            float CGI;
+            float costoUnitario = articuloProveedor.getCostoUnitario();
+            int demanda = articuloProveedor.getArticulo().getDemanda();
+            float costo = articuloProveedor.getCostoPedido();
+            int loteOptimo = articuloProveedor.getLoteOptimo();
+            float costoAlmacenamiento = articuloProveedor.getArticulo().getCostoAlmacenamiento();
 
-                    float CGI;
-                    float costoUnitario = articuloProveedor.getCostoUnitario(); //C
-                    int demanda = articuloProveedor.getArticulo().getDemanda(); //D
-                    float costo = articuloProveedor.getCostoPedido(); //S
-                    int loteOptimo = articuloProveedor.getLoteOptimo(); //Q
-                    float costoAlmacenamiento = articuloProveedor.getArticulo().getCostoAlmacenamiento(); //H
+            float CC = costoUnitario * demanda;
+            float CP = (float) demanda / loteOptimo * costo;
+            float CA = (float) loteOptimo / 2 * costoAlmacenamiento;
 
-                    float CC = costoUnitario * demanda; //Costo compra
-                    float CP = (float) demanda /loteOptimo * costo; //Costo pedido
-                    float CA = (float) loteOptimo /2 * costoAlmacenamiento; //Costo almacenamiento
+            CGI = CC + CP + CA;
 
-                    //Calculamos CGI
-                    CGI = CC + CP + CA;
-
-                    if(CC < 0 || CP < 0 || CA < 0){
-                        throw new CustomException("Error, los valores calculados dieron como resultado números negativos");
-                    }
-
-                    DTODatosCGI aux = DTODatosCGI.builder()
-                            .nombreProveedor(articuloProveedor.getProveedor().getNombreProveedor())
-                            .nombreTipoModelo(articuloProveedor.getModeloInventario().getNombreModelo())
-                            .CGI(CGI)
-                            .costoCompra(CC)
-                            .costoPedido(CP)
-                            .costoAlmacenamiento(CA)
-                            .isPredeterminado(articuloProveedor.isPredeterminado())
-                            .build();
-
-                    dtoCalcularCGI.addDato(aux);
-                }else{//El modelo es de tipo Tiempo fijo
-
-                    float CGI;
-                    float costoUnitario = articuloProveedor.getCostoUnitario(); //C
-                    int demanda = articuloProveedor.getArticulo().getDemanda(); //D
-                    float costo = articuloProveedor.getCostoPedido(); //S
-                    float costoAlmacenamiento = articuloProveedor.getArticulo().getCostoAlmacenamiento(); //H
-                    int tiempoFijo = articuloProveedor.getArticulo().getTiempoFijo(); //T
-                    int demoraProveedor = articuloProveedor.getDemoraEntrega(); //L
-                    int stockArticulo = articuloProveedor.getArticulo().getStock(); //I
-                    float z = (float) getZ(articuloProveedor.getNivelServicio()); // z
-                    float d = (float) demanda /365; // d
-                    float stockSeguridad = articuloProveedor.getStockSeguridad();
-                    float sigmaTL = getSigma(d,tiempoFijo,demoraProveedor);
-
-                    float q = (d)*(tiempoFijo+demoraProveedor)+(z*sigmaTL)-(stockArticulo);
-
-                    float CC = costoUnitario * demanda; //Costo compra
-                    float CP = demanda/q * costo; //Costo pedido
-                    float CA = q/2 + stockSeguridad * costoAlmacenamiento; //Costo almacenamiento
-
-                    //Calculamos CGI
-                    CGI = CC + CP + CA;
-
-                    if(CC < 0 || CP < 0 || CA < 0){
-                        throw new CustomException("Error, los valores calculados dieron como resultado números negativos");
-                    }
-
-                    DTODatosCGI aux = DTODatosCGI.builder()
-                            .nombreProveedor(articuloProveedor.getProveedor().getNombreProveedor())
-                            .nombreTipoModelo(articuloProveedor.getModeloInventario().getNombreModelo())
-                            .CGI(CGI)
-                            .costoCompra(CC)
-                            .costoPedido(CP)
-                            .costoAlmacenamiento(CA)
-                            .isPredeterminado(articuloProveedor.isPredeterminado())
-                            .build();
-
-                    dtoCalcularCGI.addDato(aux);
-                }
-
+            if (CC < 0 || CP < 0 || CA < 0) {
+                throw new CustomException("Error, los valores calculados dieron como resultado números negativos");
             }
 
-            return dtoCalcularCGI;
+            DTODatosCGI aux = DTODatosCGI.builder()
+                    .nombreProveedor(articuloProveedor.getProveedor().getNombreProveedor())
+                    .nombreTipoModelo(articuloProveedor.getModeloInventario().getNombreModelo())
+                    .CGI(CGI)
+                    .costoCompra(CC)
+                    .costoPedido(CP)
+                    .costoAlmacenamiento(CA)
+                    .isPredeterminado(true)
+                    .build();
+
+            dtoCalcularCGI.addDato(aux);
+
+        } else {
+            float CGI;
+            float costoUnitario = articuloProveedor.getCostoUnitario();
+            int demanda = articuloProveedor.getArticulo().getDemanda();
+            float costo = articuloProveedor.getCostoPedido();
+            float costoAlmacenamiento = articuloProveedor.getArticulo().getCostoAlmacenamiento();
+            Integer tiempoFijo = articuloProveedor.getArticulo().getTiempoFijo();
+            int demoraProveedor = articuloProveedor.getDemoraEntrega();
+            int stockArticulo = articuloProveedor.getArticulo().getStock();
+            float z = (float) getZ(articuloProveedor.getNivelServicio());
+            float d = (float) demanda / 365;
+            float stockSeguridad = articuloProveedor.getStockSeguridad();
+            float sigmaTL = getSigma(d, tiempoFijo, demoraProveedor);
+
+            float q = (d) * (tiempoFijo + demoraProveedor) + (z * sigmaTL) - (stockArticulo);
+
+            float CC = costoUnitario * demanda;
+            float CP = demanda / q * costo;
+            float CA = q / 2 + stockSeguridad * costoAlmacenamiento;
+
+            CGI = CC + CP + CA;
+
+            if (CC < 0 || CP < 0 || CA < 0) {
+                throw new CustomException("Error, los valores calculados dieron como resultado números negativos");
+            }
+
+            DTODatosCGI aux = DTODatosCGI.builder()
+                    .nombreProveedor(articuloProveedor.getProveedor().getNombreProveedor())
+                    .nombreTipoModelo(articuloProveedor.getModeloInventario().getNombreModelo())
+                    .CGI(CGI)
+                    .costoCompra(CC)
+                    .costoPedido(CP)
+                    .costoAlmacenamiento(CA)
+                    .isPredeterminado(true)
+                    .build();
+
+            dtoCalcularCGI.addDato(aux);
+        }
+
+        return dtoCalcularCGI;
     }
 
     public static double getZ(double nivelServicio) {
