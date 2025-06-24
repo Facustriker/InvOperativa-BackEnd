@@ -70,28 +70,6 @@ public class ExpertoModificarOrdenCompra {
             dto.addDetalle(aux);
         }
 
-        //Traigo el resto de proveedores que pueden ser seleccionados
-        Collection<Proveedor> proveedoresDisponibles = repositorioProveedor.getProveedoresVigentes();
-        if(proveedoresDisponibles.isEmpty()){
-            throw new CustomException("Error, no hay proveedores");
-        }
-
-        for(Proveedor prov: proveedoresDisponibles){
-            Collection<ArticuloProveedor> artProveedorDispo = repositorioArticuloProveedor.getArticulosProveedorVigentesPorIdProveedor(prov.getId());
-            Optional<ArticuloProveedor> artAux = artProveedorDispo.stream().findFirst();
-            if(artAux.isEmpty()){
-                throw new CustomException("Error, no hay primer proveedor");
-            }
-            DTOProveedor auxProveedores = DTOProveedor.builder()
-                    .idProveedor(artAux.get().getProveedor().getId())
-                    .nombreProveedor(artAux.get().getProveedor().getNombreProveedor())
-                    .costoPedido(artAux.get().getCostoPedido())
-                    .costoUnitario(artAux.get().getCostoUnitario())
-                    .build();
-
-            dto.addProveedor(auxProveedores);
-        }
-
         return dto;
     }
 
@@ -102,11 +80,11 @@ public class ExpertoModificarOrdenCompra {
             throw new CustomException("Error, no se encontró la orden de compra seleccionada");
         }
 
-        // 1️⃣ MAP de detalles para acceder rápidamente
+        // Map para acceso rápido a detalles modificados
         Map<Long, DTODetallesDatosMod> detallesMap = dto.getDetallesMod().stream()
                 .collect(Collectors.toMap(DTODetallesDatosMod::getIdOCDetalle, Function.identity()));
 
-        // 2️⃣ Verificación de punto de pedido
+        // Validación punto de pedido
         for (OrdenCompraDetalle detalle : ordenCompra.get().getOrdenCompraDetalles()) {
             DTODetallesDatosMod detalleDTO = detallesMap.get(detalle.getId());
             if (detalleDTO != null) {
@@ -120,60 +98,39 @@ public class ExpertoModificarOrdenCompra {
             }
         }
 
-        // 3️⃣ LISTAS para organizar detalles cambiados
-        List<DTODetalleOrden> detallesNuevosPorProveedor = new ArrayList<>();
-
-        // 4️⃣ MAP para verificar que no queden duplicados de artículo por proveedor
-        Map<Long, Long> articuloProveedorMap = new HashMap<>();
-
-        // 5️⃣ ACTUALIZAMOS detalles actuales y preparamos detalles para nueva Orden
+        // Solo actualizamos la cantidad de cada detalle
         for (OrdenCompraDetalle detalle : ordenCompra.get().getOrdenCompraDetalles()) {
             DTODetallesDatosMod detalleDTO = detallesMap.get(detalle.getId());
-            if (detalleDTO == null) {
-                continue;
-            }
-
-            Long idProveedorOriginal = detalle.getArticuloProveedor().getProveedor().getId();
-            Long idProveedorNuevo = detalleDTO.getIdProveedor();
-
-            // Si NO CAMBIA DE PROVEEDOR, actualizamos cantidad directamente
-            if (Objects.equals(idProveedorOriginal, idProveedorNuevo)) {
+            if (detalleDTO != null) {
                 detalle.setCantidad(detalleDTO.getCantidad());
-            } else {
-                // CAMBIA DE PROVEEDOR --> Preparamos para crear una nueva Orden
-                ArticuloProveedor apNuevo = repositorioArticuloProveedor.findByIdAndFechaBajaIsNull(detalleDTO.getIdProveedor())
-                        .orElseThrow(() -> new CustomException("Error: No existe el proveedor seleccionado para el artículo '"
-                                + detalle.getArticuloProveedor().getArticulo().getNombre() + "'"));
-
-                detallesNuevosPorProveedor.add(
-                        DTODetalleOrden.builder()
-                                .cantidad(detalleDTO.getCantidad())
-                                .subTotal(detalleDTO.getCantidad() * apNuevo.getCostoUnitario())
-                                .articuloProveedorId(apNuevo.getId())
-                                .build()
-                );
-
-                // Se elimina de esta Orden para no mezclar proveedores
-                detalle.setCantidad(0);
             }
-
-            Long idArticulo = detalle.getArticuloProveedor().getArticulo().getId();
-
-            articuloProveedorMap.put(idArticulo, detalle.getArticuloProveedor().getProveedor().getId());
         }
 
-        // 6️⃣ GUARDAMOS la Orden de Compra actual
+        // Guardamos la orden modificada
         repositorioOrdenCompra.save(ordenCompra.get());
+    }
 
-        // 7️⃣ GENERAMOS nuevas Órdenes de Compra para detalles cambiados de proveedor
-        if (!detallesNuevosPorProveedor.isEmpty()) {
-            DTONuevaOrden nuevaOrden = DTONuevaOrden.builder()
-                    .detalles(detallesNuevosPorProveedor)
-                    .confirmacion(true) // Se confirma para que no genere error por pendientes
-                    .build();
 
-            expertoGenerarOrdenDeCompra.nuevaOrden(nuevaOrden);
+    @Transactional
+    public void eliminarDetalle(Long idOc, Long idOCDetalle) {
+        Optional<OrdenCompra> ordenCompraOpt = repositorioOrdenCompra.obtenerOCVigentePorID(idOc);
+        if (ordenCompraOpt.isEmpty()) {
+            throw new CustomException("Error, no se encontró la orden de compra seleccionada");
         }
+
+        OrdenCompra ordenCompra = ordenCompraOpt.get();
+
+        // Buscar el detalle correspondiente
+        OrdenCompraDetalle detalleAEliminar = ordenCompra.getOrdenCompraDetalles().stream()
+                .filter(d -> d.getId().equals(idOCDetalle))
+                .findFirst()
+                .orElseThrow(() -> new CustomException("Error, no existe un detalle con id " + idOCDetalle + " para esta orden de compra."));
+
+        // Eliminar el detalle de la colección
+        ordenCompra.getOrdenCompraDetalles().remove(detalleAEliminar);
+
+        // Guardar la orden de compra actualizada
+        repositorioOrdenCompra.save(ordenCompra);
     }
 
 

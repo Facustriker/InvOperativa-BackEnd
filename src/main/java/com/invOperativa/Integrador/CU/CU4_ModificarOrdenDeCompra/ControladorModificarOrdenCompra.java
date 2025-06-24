@@ -22,4 +22,10 @@ public class ControladorModificarOrdenCompra {
         experto.confirmar(dto);
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping("/{idOC}/detalle/{idOCDetalle}")
+    public ResponseEntity<Void> eliminarDetalle(@PathVariable Long idOC, @PathVariable Long idOCDetalle) {
+        experto.eliminarDetalle(idOC, idOCDetalle);
+        return ResponseEntity.noContent().build();
+    }
 }
