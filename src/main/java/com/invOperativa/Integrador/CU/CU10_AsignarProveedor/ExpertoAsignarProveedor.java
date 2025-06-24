@@ -166,7 +166,7 @@ public class ExpertoAsignarProveedor {
             articuloProveedor.setLoteOptimo(loteOptimo);
             repositorioArticulo.save(articulo);
         } else {
-            int loteOptimo = articuloProveedor.getCantidadTiempoFijo(repositorioOrdenCompraDetalle);
+            int loteOptimo = articuloProveedor.getCantidadTiempoFijo(repositorioOrdenCompraDetalle, dto.getTiempoFijo());
             articuloProveedor.setLoteOptimo(loteOptimo);
             repositorioArticulo.save(articulo);
         }
@@ -279,7 +279,7 @@ public class ExpertoAsignarProveedor {
             articuloProveedor.setLoteOptimo(loteOptimo);
             repositorioArticulo.save(articulo);
         } else {
-            int loteOptimo = articuloProveedor.getCantidadTiempoFijo(repositorioOrdenCompraDetalle);
+            int loteOptimo = articuloProveedor.getCantidadTiempoFijo(repositorioOrdenCompraDetalle, dto.getTiempoFijo());
             articuloProveedor.setLoteOptimo(loteOptimo);
             repositorioArticulo.save(articulo);
         }

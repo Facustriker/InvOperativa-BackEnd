@@ -119,4 +119,23 @@ public class ArticuloProveedor extends BaseEntity{
         return (int) (primerTermino + segundoTermino);
 
     }
+
+    public int getCantidadTiempoFijo(RepositorioOrdenCompraDetalle repositorioOrdenCompraDetalle, int tiempoFijo){
+
+        int demanda = articulo.getDemanda()/365;
+        float z = (float) getZ(nivelServicio);
+        float sigma = getSigma(demanda , tiempoFijo, demoraEntrega);
+        int stockActual = articulo.getStock();
+        Integer stockPedido = repositorioOrdenCompraDetalle.obtenerCantidadTotalDeArticuloEnviado(articulo.getId());
+
+        if (stockPedido == null){
+            stockPedido = 0;
+        }
+
+        float primerTermino = demanda * (tiempoFijo + demoraEntrega);
+        float segundoTermino = z * sigma - (stockActual + stockPedido);
+
+        return (int) (primerTermino + segundoTermino);
+
+    }
 }
